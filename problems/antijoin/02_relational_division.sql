@@ -37,3 +37,14 @@ purchases
 
 -- QUERY
 -- write your query here
+SELECT
+  customer_id
+FROM purchases
+WHERE product_id IN (
+  SELECT
+    product_id
+  FROM products
+  WHERE category = 'Electronics'
+)
+GROUP BY customer_id
+HAVING COUNT(DISTINCT product_id) = (SELECT COUNT(*) FROM products WHERE category = 'Electronics' GROUP BY category)

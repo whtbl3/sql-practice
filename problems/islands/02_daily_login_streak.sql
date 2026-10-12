@@ -30,3 +30,25 @@ logins
 
 -- QUERY
 -- write your query here
+WITH grouped AS (
+  SELECT DISTINCT
+    user_id,
+    login_date,
+    login_date - (ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY login_date))::int AS grp
+  FROM logins
+  ORDER BY grp, user_id
+),
+streak AS (
+  SELECT
+    user_id,
+    grp,
+    COUNT(*) AS streak
+  FROM grouped
+  GROUP BY user_id, grp
+)
+SELECT
+  user_id,
+  MAX(streak) AS longest_streak
+FROM streak
+GROUP BY user_id
+ORDER BY longest_streak DESC, user_id ASC
