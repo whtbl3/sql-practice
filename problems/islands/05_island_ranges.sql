@@ -27,3 +27,21 @@ shifts
 
 -- QUERY
 -- write your query here
+WITH d AS (
+  SELECT DISTINCT employee, work_date FROM shifts
+),
+g AS (
+  SELECT
+    employee,
+    work_date,
+    work_date - (ROW_NUMBER() OVER (PARTITION BY employee ORDER BY work_date))::int AS grp
+  FROM d
+)
+SELECT
+  employee,
+  MIN(work_date) AS start_date,
+  MAX(work_date) AS end_date,
+  COUNT(*) AS days
+FROM g
+GROUP BY employee, grp
+ORDER BY employee, start_date
