@@ -23,3 +23,11 @@ employees
 
 -- QUERY
 -- write your query here
+SELECT
+  e.name
+FROM employees e
+WHERE e.salary > (
+  SELECT m.salary
+  FROM employees m
+  WHERE e.emp_id = m.manager_id
+) 
