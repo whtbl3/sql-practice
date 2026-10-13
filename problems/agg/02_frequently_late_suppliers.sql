@@ -31,3 +31,15 @@ deliveries
 
 -- QUERY
 -- write your query here
+WITH deliver_stats AS (
+  SELECT
+    supplier,
+    COUNT(*) AS deliveries,
+    ROUND(AVG(actual_date - expected_date),1) AS avg_late_days,
+    ROUND(AVG(CASE WHEN actual_date <= expected_date THEN 1.0 ELSE 0.0 END) * 100.0,1) AS on_time_pct
+  FROM deliveries
+  GROUP BY supplier
+)
+SELECT * FROM deliver_stats
+WHERE deliveries >= 3 AND avg_late_days > 0
+ORDER BY avg_late_days DESC, supplier ASC
