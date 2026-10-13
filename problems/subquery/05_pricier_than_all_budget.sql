@@ -26,3 +26,13 @@ products
 
 -- QUERY
 -- write your query here
+SELECT
+  name, price
+FROM products
+WHERE price > ALL (
+  SELECT
+    price
+  FROM products
+  WHERE category = 'Budget'
+)
+ORDER BY price DESC, name ASC

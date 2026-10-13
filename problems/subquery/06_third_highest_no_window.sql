@@ -31,3 +31,14 @@ employees
 
 -- QUERY
 -- write your query here
+SELECT DISTINCT
+  e1.department, e1.salary AS third_highest
+FROM employees e1
+WHERE (
+  SELECT
+    COUNT(DISTINCT e2.salary)
+  FROM employees e2
+  WHERE e2.department = e1.department
+    AND e2.salary > e1.salary
+) = 2
+ORDER BY third_highest DESC

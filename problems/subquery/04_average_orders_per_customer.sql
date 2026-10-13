@@ -35,13 +35,14 @@ orders
 -- QUERY
 -- write your query here
 SELECT
-  COUNT(customer_id) AS customers
+  COUNT(*) AS customers,
+  ROUND(AVG(n_orders), 2) AS avg_orders,
+  MAX(n_orders) AS max_orders
 FROM (
-  SELECT customer_id
+  SELECT
+    c.customer_id,
+    COUNT(o.order_id) AS n_orders
   FROM customers c
-  WHERE c.customer_id IN (
-    SELECT o.customer_id
-    FROM orders o
-    WHERE c.customer_id = o.customer_id
-  )
+    LEFT JOIN orders o ON o.customer_id = c.customer_id
+  GROUP BY c.customer_id
 )
