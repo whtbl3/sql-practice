@@ -22,3 +22,12 @@ employees
 
 -- QUERY
 -- write your query here
+SELECT  
+  e1.salary AS second_highest
+FROM employees e1
+WHERE (
+  SELECT
+    COUNT(DISTINCT e2.salary)
+  FROM employees e2
+  WHERE e2.salary > e1.salary
+) = 1
