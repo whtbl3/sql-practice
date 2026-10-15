@@ -24,3 +24,18 @@ sales
 
 -- QUERY
 -- write your query here
+SELECT
+  category,
+  SUM(amount) AS revenue
+FROM sales
+GROUP BY category
+HAVING SUM(amount) > (
+  SELECT
+    AVG(total_amount)
+  FROM (
+    SELECT SUM(amount) AS total_amount
+    FROM sales
+    GROUP BY category
+  )
+)
+ORDER BY revenue DESC, category ASC

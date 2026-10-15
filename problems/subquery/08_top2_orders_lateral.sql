@@ -34,3 +34,16 @@ orders
 
 -- QUERY
 -- write your query here
+SELECT
+  c.name,
+  fo.order_id,
+  fo.amount
+FROM customers c
+  LEFT JOIN LATERAL (
+    SELECT o.order_id, o.amount
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+    ORDER BY o.amount DESC, o.order_id ASC
+    LIMIT 2
+  ) fo ON TRUE
+ORDER BY c.name, fo.amount DESC, fo.order_id;
