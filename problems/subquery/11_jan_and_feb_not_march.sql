@@ -30,3 +30,22 @@ orders
 
 -- QUERY
 -- write your query here
+SELECT DISTINCT
+  customer
+FROM orders o1
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM orders o2
+  WHERE o1.customer = o2.customer 
+    AND to_char(o2.order_date, 'YYYY-MM') = '2024-03'
+) AND EXISTS (
+  SELECT 1
+  FROM orders o2
+  WHERE o1.customer = o2.customer
+    AND to_char(o2.order_date, 'YYYY-MM') = '2024-01'
+) AND EXISTS (
+  SELECT 1
+  FROM orders o2
+  WHERE o1.customer = o2.customer
+    AND to_char(o2.order_date, 'YYYY-MM') = '2024-02'
+)

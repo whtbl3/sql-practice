@@ -27,3 +27,20 @@ orders
 
 -- QUERY
 -- write your query here
+SELECT
+  o1.order_id,
+  o1.customer,
+  o1.amount,
+  s.prev_avg
+FROM orders o1
+  LEFT JOIN LATERAL (
+    SELECT
+      ROUND(AVG(amount), 1) AS prev_avg
+    FROM orders o2
+    WHERE o1.customer = o2.customer
+      AND (
+        o1.order_date > o2.order_date
+        OR o1.order_id > o2.order_id
+      )
+  ) s ON TRUE
+WHERE o1.amount > 2 * s.prev_avg

@@ -26,3 +26,13 @@ transactions
 
 -- QUERY
 -- write your query here
+SELECT 
+  t1.txn_id, 
+  t1.amount, 
+  (
+    SELECT SUM(amount)
+    FROM transactions t2
+    WHERE t1.txn_id >= t2.txn_id
+  ) AS running_total
+FROM transactions t1
+ORDER BY t1.txn_id
