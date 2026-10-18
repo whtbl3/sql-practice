@@ -33,26 +33,24 @@ orders
 WITH monthly AS (
   SELECT DISTINCT
     customer_id,
-    EXTRACT(YEAR FROM order_date) * 12 + EXTRACT(MONTH FROM order_date) AS month_idx
+    order_date,
+    EXTRACT(YEAR FROM order_date) * 12 + EXTRACT(MONTH FROM order_date) AS m
   FROM orders
 ),
-grouped AS (
+g AS (
   SELECT
     customer_id,
-    month_idx - ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY month_idx) AS grp
+    m - ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY m) AS grp
   FROM monthly
 ),
-streak AS (
+s AS (
   SELECT
     customer_id,
-    grp,
-    COUNT(*) AS streak_len
-  FROM grouped
+    COUNT(*) AS streak
+  FROM g
   GROUP BY customer_id, grp
 )
-SELECT
-  customer_id,
-  MAX(streak_len) AS longest_streak
-FROM streak
+SELECT customer_id, MAX(streak) AS longest_streak
+FROM s
 GROUP BY customer_id
 ORDER BY longest_streak DESC, customer_id ASC

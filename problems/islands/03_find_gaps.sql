@@ -27,7 +27,7 @@ invoices
 
 -- QUERY
 -- write your query here
-WITH next_invoice_number AS (
+WITH gaps AS (
   SELECT
     invoice_no,
     LEAD(invoice_no) OVER () AS next_invoice_no
@@ -36,6 +36,6 @@ WITH next_invoice_number AS (
 SELECT
   invoice_no + 1 AS gap_start,
   next_invoice_no - 1 AS gap_end
-FROM next_invoice_number
+FROM
+  gaps
 WHERE next_invoice_no - invoice_no > 1
-ORDER BY gap_start

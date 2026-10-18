@@ -27,15 +27,18 @@ shifts
 
 -- QUERY
 -- write your query here
-WITH d AS (
-  SELECT DISTINCT employee, work_date FROM shifts
+WITH daily AS (
+  SELECT DISTINCT
+    employee,
+    work_date
+  FROM shifts
 ),
 g AS (
   SELECT
     employee,
     work_date,
     work_date - (ROW_NUMBER() OVER (PARTITION BY employee ORDER BY work_date))::int AS grp
-  FROM d
+  FROM daily
 )
 SELECT
   employee,
@@ -43,5 +46,5 @@ SELECT
   MAX(work_date) AS end_date,
   COUNT(*) AS days
 FROM g
-GROUP BY employee, grp
+GROUP BY grp, employee
 ORDER BY employee, start_date
