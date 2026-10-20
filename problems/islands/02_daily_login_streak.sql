@@ -5,6 +5,7 @@
 -- Task: For each user find the longest run of consecutive calendar days with at least one login
 --   (several logins on the same day count once). Return user_id, longest_streak; sort by
 --   longest_streak descending, then user_id.
+-- Learn: grinding/sql-analytics-patterns.md, mục 1.6d
 
 -- INPUT
 logins

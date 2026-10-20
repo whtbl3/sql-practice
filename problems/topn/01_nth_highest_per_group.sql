@@ -6,6 +6,7 @@
 --   salary in that department (two people sharing the top salary both hold rank 1). Ignore
 --   employees whose salary is NULL. Skip departments with no second salary level. Return
 --   department, name, salary; sort by department, then name.
+-- Learn: grinding/sql-analytics-patterns.md, mục 5.5
 
 -- INPUT
 employees

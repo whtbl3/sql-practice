@@ -5,6 +5,7 @@
 -- Task: For each user return the length of their CURRENT streak: the run of consecutive days
 --   (several rows on one day count once) that ends on the user's most recent activity date.
 --   Return user_id, current_streak; sort by user_id.
+-- Learn: grinding/sql-analytics-patterns.md, mục 1.6c
 
 -- INPUT
 activity

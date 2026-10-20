@@ -5,6 +5,7 @@
 -- Task: For each day (one row per day) compute running_total (revenue from the first day up to
 --   that day) and moving_avg_3 (average revenue of that day and up to the 2 previous days,
 --   rounded to 2 decimals). Sort by sale_date.
+-- Learn: grinding/sql-analytics-patterns.md, mục 5.4
 
 -- INPUT
 daily_sales

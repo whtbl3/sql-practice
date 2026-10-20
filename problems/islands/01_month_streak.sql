@@ -6,6 +6,7 @@
 --   customer placed at least one order (a run may cross a year boundary; a customer who ordered
 --   in only one month has a streak of 1). Return customer_id, longest_streak; sort by
 --   longest_streak descending, then customer_id ascending.
+-- Learn: grinding/sql-analytics-patterns.md, mục 1.4
 
 -- INPUT
 orders

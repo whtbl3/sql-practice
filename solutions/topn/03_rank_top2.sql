@@ -6,6 +6,7 @@
 --   RANK (people with equal salaries share a rank and the next rank is skipped). Ignore employees
 --   whose salary is NULL. Return department, name, salary; sort by department, then salary
 --   descending, then name.
+-- Learn: grinding/sql-analytics-patterns.md, mục 5.5
 
 -- INPUT
 employees

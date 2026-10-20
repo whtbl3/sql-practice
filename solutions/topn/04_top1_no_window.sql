@@ -6,6 +6,7 @@
 --   keyword is rejected). If several employees tie for the top salary, return all of them. Ignore
 --   employees whose salary is NULL. Return department, name, salary; sort by department, then
 --   name.
+-- Learn: grinding/sql-analytics-patterns.md, mục 5.5
 -- @forbid: \bOVER\s*\(
 
 -- INPUT

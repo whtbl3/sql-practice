@@ -5,6 +5,7 @@
 -- Task: For each account return its most recent balance snapshot. If two snapshots share the same
 --   snapshot_date, take the one with the larger snapshot_id. Return account_id, snapshot_id,
 --   balance; sort by account_id.
+-- Learn: grinding/sql-analytics-patterns.md, mục 5.5
 
 -- INPUT
 balance_snapshots

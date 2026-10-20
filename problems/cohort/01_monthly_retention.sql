@@ -7,6 +7,7 @@
 --   retention_pct = active_customers / cohort size * 100, rounded to 1 decimal. month_offset is
 --   the number of months since the cohort month (0, 1, 2, ...). cohort_month is formatted 'YYYY-
 --   MM'. Sort by cohort_month, month_offset.
+-- Learn: grinding/sql-analytics-patterns.md, mục 3.2
 
 -- INPUT
 orders

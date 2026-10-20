@@ -7,6 +7,7 @@
 --   as-of date), frequency (number of orders), monetary (total amount), and r_score, f_score,
 --   m_score using NTILE(3) (higher score = better; break ties by customer_id ascending). Sort by
 --   customer_id.
+-- Learn: grinding/sql-analytics-patterns.md, mục 2.3
 
 -- INPUT
 orders

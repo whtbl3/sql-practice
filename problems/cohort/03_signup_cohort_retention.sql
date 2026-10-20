@@ -8,6 +8,7 @@
 --   cohort size counts ALL users who signed up that month, including users with no events.
 --   month_offset = months between the signup month and the event month; events before the signup
 --   month are ignored. cohort_month is 'YYYY-MM'. Sort by cohort_month, month_offset.
+-- Learn: grinding/sql-analytics-patterns.md, mục 3.5a
 
 -- INPUT
 users
