@@ -24,11 +24,13 @@ employees
 
 -- QUERY
 -- write your query here
-SELECT e.name, e.salary
-FROM employees e
-WHERE e.salary > (
+SELECT
+  name,
+  salary
+FROM employees e1
+WHERE salary > (
   SELECT
-    AVG(m.salary)
-  FROM employees m
+    AVG(salary)
+  FROM employees e2
 )
-ORDER BY e.salary DESC, e.name 
+ORDER BY salary DESC, name ASC

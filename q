@@ -6,7 +6,10 @@
 # q <group> <n> h        submit: visible test + hidden tests (case names and pass/fail only)
 # q <group> <n> hv       like h; if everything passes, show every hidden case in detail
 # q <group> <n> s        show the reference solution and its result (including hidden tests)
-# q verify               run every reference solution against every test (health check)
+# q <group> <n> py [mode] same problem solved with pandas (creates the .py file on first use); mode as above
+# q quiz                 open the multiple-choice SQL interview quiz in the browser (Streamlit)
+# q quiz stop            stop every running quiz server
+# q verify               run every reference solution (SQL and pandas) against every test (health check)
 cd "$(dirname "$(readlink -f "$0")")" || exit 1
 
 list() {  # $1 = group name or empty
@@ -22,7 +25,8 @@ for g in sorted(os.listdir("problems")):
         m = re.search(r"^-- Problem [^:]+: (.*?)\s+\[(\w+)\]", head, re.M)
         pat = re.search(r"^-- Pattern: (.*)$", head, re.M)
         n = os.path.basename(f).split("_")[0]
-        print(f"  {n}  {m.group(2):<7} {m.group(1):<48} {pat.group(1) if pat else ''}")
+        py = " [py]" if os.path.exists(f"solutions/{g}/" + os.path.basename(f)[:-4] + ".py") else ""
+        print(f"  {n}  {m.group(2):<7} {m.group(1):<48} {pat.group(1) if pat else ''}{py}")
 PY
 }
 
@@ -35,9 +39,16 @@ resolve_group() {  # exact name or unique prefix
 
 [ -z "$1" ] && { list ""; exit; }
 
+if [ "$1" = quiz ]; then
+  if [ "$2" = stop ]; then
+    pkill -f "[s]treamlit run quiz/app.py" && echo "Quiz stopped." || echo "No quiz server running."; exit 0
+  fi
+  exec uv run --no-project --python 3.12 --with streamlit --with pyyaml streamlit run quiz/app.py "${@:2}"
+fi
+
 if [ "$1" = verify ]; then
   fail=0
-  for f in solutions/*/*.sql; do
+  for f in solutions/*/*.sql solutions/*/*.py; do
     out=$(uv run check.py "$f" --submit 2>&1 | sed 's/\x1b\[[0-9;]*m//g')
     if echo "$out" | grep -q "Accepted" && ! echo "$out" | grep -q "✘"; then printf "  ok    %s  %s\n" "$f" "$(echo "$out" | grep -o 'Hidden tests: [0-9/]* passed')"
     else printf "  FAIL  %s\n" "$f"; fail=1; fi
@@ -47,19 +58,25 @@ fi
 
 g=$(resolve_group "$1") || exit 1
 [ -z "$2" ] && { list "$g"; exit; }
-case "$2" in ''|*[!0-9]*) echo "Usage: q <group> <number> [c|h|hv|s]" >&2; exit 1;; esac
+case "$2" in ''|*[!0-9]*) echo "Usage: q <group> <number> [py] [c|h|hv|s]" >&2; exit 1;; esac
 
-n=$(printf "%02d" "$((10#$2))"); mode="${3:-w}"
+n=$(printf "%02d" "$((10#$2))"); mode="${3:-w}"; ext=sql
+[ "$mode" = py ] && { ext=py; mode="${4:-w}"; }
 dir=problems; [ "$mode" = s ] && dir=solutions
 f=$(ls "$dir/$g/${n}"_*.sql 2>/dev/null | head -1)
 [ -n "$f" ] || { echo "No problem $g $n"; exit 1; }
+if [ $ext = py ]; then
+  if [ "$mode" = s ]; then f="${f%.sql}.py"; [ -f "$f" ] || { echo "No pandas reference solution for $g $n yet"; exit 1; }
+  else f=$(uv run check.py "$f" --new-py) || exit 1; fi
+fi
 
 case "$mode" in
   w)  exec uv run check.py "$f" -w -r ;;
   c)  uv run check.py "$f" ;;
   h)  uv run check.py "$f" --submit ;;
   hv) uv run check.py "$f" --submit -v ;;
-  s)  echo "--- Reference solution ---"; sed -n '/^-- QUERY/,$p' "$f" | sed '1d'
+  s)  echo "--- Reference solution ---"
+      if [ $ext = py ]; then awk 'c >= 2; /^r?"""/ { c++ }' "$f"; else sed -n '/^-- QUERY/,$p' "$f" | sed '1d'; fi
       echo "--- Result ---"; uv run check.py "$f" --submit ;;
   *)  echo "Invalid mode: $mode (w, c, h, hv, s)"; exit 1 ;;
 esac

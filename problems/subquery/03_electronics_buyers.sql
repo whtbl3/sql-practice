@@ -42,16 +42,14 @@ products
 
 -- QUERY
 -- write your query here
-SELECT name
+SELECT
+  name
 FROM customers
 WHERE EXISTS (
   SELECT 1
   FROM orders
-  WHERE orders.customer_id = customers.customer_id
-  AND orders.product_id IN (
-    SELECT products.product_id
-    FROM products
-    WHERE category = 'Electronics'
-  )
+  JOIN products
+  ON orders.product_id = products.product_id
+  WHERE category = 'Electronics' AND customers.customer_id = orders.customer_id
 )
-ORDER BY name
+ORDER BY name, customer_id

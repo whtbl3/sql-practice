@@ -35,17 +35,18 @@ order_items
 -- QUERY
 -- write your query here
 SELECT
-  p.name,
-  COALESCE(
-    (SELECT SUM(oi.qty)
-    FROM order_items oi
-    WHERE p.product_id = oi.product_id)
-  , 0) AS units_sold,
+  name,
+  (
+    SELECT
+      COALESCE(SUM(qty), 0)
+  FROM order_items
+  WHERE products.product_id = order_items.product_id
+  ) AS units_sold,
   ROUND(
     COALESCE(
-      (SELECT SUM(qty) FROM order_items oi WHERE oi.product_id = p.product_id), 0) * 100.0
+      (SELECT SUM(qty) FROM order_items WHERE order_items.product_id = products.product_id), 0) * 100.0
     /
     NULLIF((SELECT SUM(qty) FROM order_items), 0)
   , 1) AS pct_of_units
-FROM products p
+FROM products
 ORDER BY units_sold DESC, name ASC

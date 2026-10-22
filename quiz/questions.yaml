@@ -1,0 +1,724 @@
+# Bộ câu hỏi phỏng vấn SQL cho quiz/app.py
+#
+# Mỗi câu:
+#   id        duy nhất, không đổi (lịch sử làm bài lưu theo id)
+#   topic     chủ đề (bộ lọc ở sidebar)
+#   level     Easy | Medium | Hard
+#   question  đề (markdown)
+#   code      (tùy chọn) đoạn SQL hiển thị kèm đề
+#   options   các lựa chọn; thứ tự sẽ bị xáo khi làm bài, nên đừng viết "đáp án A" hay "tất cả các ý trên"
+#   answer    chỉ số (tính từ 0) của đáp án đúng; nhiều đáp án đúng thì ghi danh sách -> câu chọn nhiều
+#   explain   giải thích hiện sau khi trả lời
+#   ref       (tùy chọn) mục tài liệu để đọc thêm
+#
+# Các câu "đoán output" đã được chạy thật trên PostgreSQL 16 (engine của check.py).
+
+- id: null-agg
+  topic: NULL & 3VL
+  level: Easy
+  question: Bảng `t(x)` có 3 dòng `10`, `NULL`, `20`. Kết quả là gì?
+  code: |
+    SELECT COUNT(*), COUNT(x), SUM(x), AVG(x) FROM t;
+  options:
+    - "3, 3, 30, 10"
+    - "3, 2, 30, 15"
+    - "2, 2, 30, 15"
+    - "3, 2, NULL, NULL"
+  answer: 1
+  explain: |
+    `COUNT(*)` đếm dòng (3). `COUNT(x)`, `SUM`, `AVG` **bỏ qua NULL**: đếm 2 giá trị, tổng 30, trung bình 30 / 2 = 15 (không phải 30 / 3 = 10).
+    Muốn coi NULL là 0 thì phải viết `AVG(COALESCE(x, 0))`.
+  ref: grinding/sql-common-pitfalls.md, A3
+
+- id: null-not-in
+  topic: NULL & 3VL
+  level: Medium
+  question: "`t(x)` = {10, NULL, 20}, `s(y)` = {10, NULL}. Câu sau trả về bao nhiêu dòng?"
+  code: |
+    SELECT * FROM t WHERE x NOT IN (SELECT y FROM s);
+  options:
+    - "0"
+    - "1 (x = 20)"
+    - "2 (x = 20 và x = NULL)"
+    - "Báo lỗi"
+  answer: 0
+  explain: |
+    `x NOT IN (10, NULL)` = `x <> 10 AND x <> NULL`. Vế `x <> NULL` luôn là NULL, nên cả biểu thức không bao giờ là TRUE và **không dòng nào** được trả về.
+    Dùng `NOT EXISTS` (anti-join) thì không bị bẫy này.
+  ref: grinding/sql-common-pitfalls.md, A4
+
+- id: null-equals
+  topic: NULL & 3VL
+  level: Easy
+  question: "`SELECT NULL = NULL;` trả về gì trong PostgreSQL?"
+  options:
+    - "TRUE"
+    - "FALSE"
+    - "NULL"
+    - "Báo lỗi cú pháp"
+  answer: 2
+  explain: |
+    So sánh bất kỳ thứ gì với NULL bằng `=`, `<>`, `<`… đều cho **NULL** (unknown). Kiểm tra NULL bằng `IS NULL`; so sánh an toàn với NULL bằng `IS [NOT] DISTINCT FROM`.
+  ref: grinding/sql-common-pitfalls.md, A2
+
+- id: null-distinct-from
+  topic: NULL & 3VL
+  level: Medium
+  question: Điều kiện nào trả về **cả** các dòng có `x` là NULL lẫn các dòng có `x` khác 5?
+  options:
+    - "`x <> 5`"
+    - "`NOT (x = 5)`"
+    - "`x IS DISTINCT FROM 5`"
+    - "`x != 5`"
+  answer: 2
+  explain: |
+    `x <> 5`, `x != 5`, `NOT (x = 5)` đều cho NULL khi `x` là NULL nên dòng đó bị loại. `IS DISTINCT FROM` coi NULL là một giá trị bình thường: `NULL IS DISTINCT FROM 5` là TRUE.
+
+- id: null-int-division
+  topic: NULL & 3VL
+  level: Easy
+  question: Kết quả của câu sau?
+  code: |
+    SELECT 5 / 2, 5 / 2.0;
+  options:
+    - "2.5 và 2.5"
+    - "2 và 2.5"
+    - "2 và 2"
+    - "3 và 2.5"
+  answer: 1
+  explain: |
+    Hai số nguyên chia nhau thì ra số nguyên (bỏ phần thập phân, không làm tròn): `5 / 2 = 2`. Có một vế là numeric (`2.0`) thì ra `2.5`.
+    Lỗi kinh điển khi tính tỷ lệ: `COUNT(*) FILTER (...) / COUNT(*)` luôn ra 0 hoặc 1. Viết `100.0 * a / b`.
+  ref: grinding/sql-common-pitfalls.md, A5
+
+- id: join-left-where
+  topic: JOIN
+  level: Medium
+  question: Câu sau xử lý thế nào với khách hàng **chưa có đơn hàng nào**?
+  code: |
+    SELECT c.customer_id, o.order_id
+    FROM customers c
+    LEFT JOIN orders o ON o.customer_id = c.customer_id
+    WHERE o.status = 'paid';
+  options:
+    - "Vẫn xuất hiện, với order_id là NULL"
+    - "Bị loại khỏi kết quả"
+    - "Xuất hiện một lần cho mỗi trạng thái đơn"
+    - "Báo lỗi vì LEFT JOIN không dùng được với WHERE"
+  answer: 1
+  explain: |
+    Khách không có đơn có `o.status` là NULL; `NULL = 'paid'` là NULL nên `WHERE` loại dòng đó. LEFT JOIN bị biến thành INNER JOIN.
+    Muốn giữ khách không có đơn thì đưa điều kiện vào `ON`: `LEFT JOIN orders o ON o.customer_id = c.customer_id AND o.status = 'paid'`.
+  ref: grinding/sql-common-pitfalls.md, mục C
+
+- id: join-fanout
+  topic: JOIN
+  level: Hard
+  question: |
+    Một khách có 1 đơn hàng; đơn đó có **3** dòng trong `order_items` và **2** dòng trong `payments` (mỗi payment 50). Câu sau trả về bao nhiêu?
+  code: |
+    SELECT SUM(p.amount)
+    FROM orders o
+    JOIN order_items i ON i.order_id = o.order_id
+    JOIN payments p ON p.order_id = o.order_id;
+  options:
+    - "100"
+    - "150"
+    - "300"
+    - "600"
+  answer: 2
+  explain: |
+    JOIN hai bảng con cùng lúc tạo 3 × 2 = 6 dòng (fan-out), mỗi payment lặp 3 lần: 6 × 50 = 300 thay vì 100.
+    Cách sửa: tổng hợp từng bảng con riêng (CTE `GROUP BY order_id`) rồi mới JOIN.
+  ref: grinding/sql-common-pitfalls.md, mục C
+
+- id: join-cross-count
+  topic: JOIN
+  level: Easy
+  question: "Bảng A có 3 dòng, bảng B có 4 dòng. `SELECT * FROM A CROSS JOIN B` trả về bao nhiêu dòng?"
+  options:
+    - "7"
+    - "4"
+    - "12"
+    - "3"
+  answer: 2
+  explain: |
+    CROSS JOIN là tích Descartes: mọi cặp (a, b), 3 × 4 = 12 dòng. Quên điều kiện `ON` trong JOIN kiểu cũ (`FROM A, B`) cũng cho kết quả này.
+
+- id: join-anti
+  topic: JOIN
+  level: Medium
+  question: Cách nào an toàn nhất để lấy các khách hàng **không** có đơn hàng nào, kể cả khi `orders.customer_id` có thể chứa NULL?
+  options:
+    - "`WHERE customer_id NOT IN (SELECT customer_id FROM orders)`"
+    - "`WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id)`"
+    - "`JOIN orders o ON o.customer_id <> c.customer_id`"
+    - "`WHERE customer_id <> ALL (SELECT customer_id FROM orders)`"
+  answer: 1
+  explain: |
+    `NOT IN` và `<> ALL` trả về rỗng khi danh sách có NULL (cùng bẫy với câu `NOT IN`). `JOIN ... ON <>` ghép mỗi khách với mọi đơn của người khác.
+    `NOT EXISTS` (hoặc `LEFT JOIN ... WHERE o.customer_id IS NULL`) là anti-join đúng nghĩa.
+  ref: grinding/sql-common-pitfalls.md, mục C
+
+- id: agg-having
+  topic: Aggregation
+  level: Easy
+  question: Câu nào lấy đúng các khách hàng có **hơn 2 đơn hàng**?
+  options:
+    - "`SELECT customer_id FROM orders WHERE COUNT(*) > 2 GROUP BY customer_id`"
+    - "`SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(*) > 2`"
+    - "`SELECT customer_id, COUNT(*) AS n FROM orders WHERE n > 2 GROUP BY customer_id`"
+    - "`SELECT customer_id FROM orders GROUP BY customer_id WHERE COUNT(*) > 2`"
+  answer: 1
+  explain: |
+    `WHERE` lọc **dòng trước** khi gom nhóm nên không dùng được hàm tổng hợp; `HAVING` lọc **nhóm sau** khi gom. Bí danh trong `SELECT` (`n`) cũng chưa tồn tại lúc `WHERE` chạy.
+  ref: grinding/sql-common-pitfalls.md, 0.1
+
+- id: agg-nonaggregated
+  topic: Aggregation
+  level: Medium
+  question: Trong PostgreSQL, câu sau làm gì?
+  code: |
+    SELECT department, name, MAX(salary)
+    FROM employees
+    GROUP BY department;
+  options:
+    - "Trả về tên người có lương cao nhất mỗi phòng"
+    - "Trả về một tên bất kỳ trong phòng"
+    - "Báo lỗi: name phải nằm trong GROUP BY hoặc trong hàm tổng hợp"
+    - "Trả về mỗi nhân viên một dòng"
+  answer: 2
+  explain: |
+    PostgreSQL báo `column "employees.name" must appear in the GROUP BY clause or be used in an aggregate function`. (MySQL ở chế độ cũ thì trả một tên ngẫu nhiên, càng nguy hiểm.)
+    Muốn lấy người lương cao nhất mỗi phòng: dạng Top-N per group với `ROW_NUMBER`/`RANK`, hoặc `DISTINCT ON`.
+  ref: grinding/sql-analytics-patterns.md, 5.5
+
+- id: agg-count-distinct
+  topic: Aggregation
+  level: Easy
+  question: "Cột `city` có các giá trị `'HN'`, `'HN'`, `'HCM'`, `NULL`. `COUNT(DISTINCT city)` bằng bao nhiêu?"
+  options:
+    - "4"
+    - "3"
+    - "2"
+    - "1"
+  answer: 2
+  explain: |
+    `DISTINCT` gom còn `'HN'`, `'HCM'`, `NULL`, nhưng `COUNT(cột)` bỏ qua NULL nên ra 2.
+
+- id: win-rank
+  topic: Window
+  level: Easy
+  question: "Lương sắp giảm dần: 500, 500, 400. Giá trị `RANK()` lần lượt là?"
+  options:
+    - "1, 2, 3"
+    - "1, 1, 2"
+    - "1, 1, 3"
+    - "1, 2, 2"
+  answer: 2
+  explain: |
+    `RANK` cho các dòng bằng nhau cùng hạng và **bỏ qua** hạng kế tiếp (1, 1, 3). `DENSE_RANK` không bỏ (1, 1, 2). `ROW_NUMBER` luôn khác nhau (1, 2, 3, thứ tự giữa hai dòng 500 không xác định).
+  ref: grinding/sql-analytics-patterns.md, 5.5
+
+- id: win-default-frame
+  topic: Window
+  level: Hard
+  question: "Bảng `d(day, amount)` = (1, 10), (1, 20), (2, 30). Cột `run` của 3 dòng là?"
+  code: |
+    SELECT day, amount, SUM(amount) OVER (ORDER BY day) AS run
+    FROM d;
+  options:
+    - "10, 30, 60"
+    - "30, 30, 60"
+    - "10, 20, 30"
+    - "60, 60, 60"
+  answer: 1
+  explain: |
+    Có `ORDER BY` mà không ghi frame thì frame mặc định là `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`: tính tới **hết các dòng ngang hàng (peer)** với dòng hiện tại. Hai dòng day = 1 là peer nên cùng ra 30.
+    Muốn cộng dồn từng dòng một: `ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW` và thêm cột phá hòa vào `ORDER BY`.
+  ref: grinding/sql-common-pitfalls.md, mục F
+
+- id: win-last-value
+  topic: Window
+  level: Hard
+  question: "Cùng bảng `d` = (1, 10), (1, 20), (2, 30). Với dòng `day = 1, amount = 10`, `lv` bằng bao nhiêu?"
+  code: |
+    SELECT day, amount, LAST_VALUE(amount) OVER (ORDER BY day) AS lv
+    FROM d;
+  options:
+    - "10"
+    - "20"
+    - "30"
+    - "NULL"
+  answer: 1
+  explain: |
+    Frame mặc định kết thúc ở **peer cuối cùng** của dòng hiện tại, không phải cuối partition. Với day = 1, frame là hai dòng (10, 20) nên `LAST_VALUE` = 20, không phải 30.
+    Muốn giá trị cuối của cả partition: `ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING`.
+  ref: grinding/sql-common-pitfalls.md, mục F
+
+- id: win-where
+  topic: Window
+  level: Medium
+  question: "Cần lấy dòng có `ROW_NUMBER() ... = 1`. Trong PostgreSQL 16, viết thế nào?"
+  options:
+    - "`WHERE ROW_NUMBER() OVER (...) = 1`"
+    - "`HAVING ROW_NUMBER() OVER (...) = 1`"
+    - "Tính `ROW_NUMBER` trong subquery/CTE, lọc `WHERE rn = 1` ở query ngoài"
+    - "`QUALIFY ROW_NUMBER() OVER (...) = 1`"
+  answer: 2
+  explain: |
+    Window function chạy **sau** `WHERE`/`HAVING`, nên không lọc được ở đó. PostgreSQL không có `QUALIFY` (Snowflake, BigQuery, DuckDB có). Cách chuẩn: CTE hoặc subquery.
+  ref: grinding/sql-analytics-patterns.md, 0.3
+
+- id: win-lag-first
+  topic: Window
+  level: Easy
+  question: "`LAG(amount) OVER (ORDER BY day)` trả về gì cho dòng đầu tiên?"
+  options:
+    - "0"
+    - "NULL"
+    - "Giá trị của chính dòng đó"
+    - "Báo lỗi"
+  answer: 1
+  explain: |
+    Không có dòng trước nên trả NULL. Có thể đặt giá trị mặc định: `LAG(amount, 1, 0) OVER (...)`. Khi tính tăng trưởng MoM, dòng đầu NULL là đúng nghĩa (không có tháng trước để so).
+
+- id: sub-second-highest
+  topic: Subquery & CTE
+  level: Medium
+  question: "Bảng `t(salary)` chỉ có hai dòng `100`, `100`. Câu sau trả về gì?"
+  code: |
+    SELECT MAX(salary) AS second
+    FROM t
+    WHERE salary < (SELECT MAX(salary) FROM t);
+  options:
+    - "Không có dòng nào"
+    - "Một dòng: 100"
+    - "Một dòng: NULL"
+    - "Báo lỗi"
+  answer: 2
+  explain: |
+    `WHERE` loại hết dòng, nhưng hàm tổng hợp **không có GROUP BY** luôn trả đúng một dòng, nên ra một dòng NULL. Đây là lý do cách viết này đáp ứng được đề "không có thì trả NULL".
+    Viết `ORDER BY salary DESC OFFSET 1 LIMIT 1` thì trả **0 dòng**; phải bọc thành scalar subquery `SELECT (...) AS second` mới ra NULL.
+  ref: problems/subquery/07_second_highest_or_null.sql
+
+- id: sub-correlated
+  topic: Subquery & CTE
+  level: Easy
+  question: Subquery nào là **correlated subquery**?
+  options:
+    - "`SELECT * FROM e WHERE salary > (SELECT AVG(salary) FROM e)`"
+    - "`SELECT * FROM e WHERE salary > (SELECT AVG(salary) FROM e e2 WHERE e2.dept = e.dept)`"
+    - "`SELECT * FROM (SELECT dept, AVG(salary) FROM e GROUP BY dept) t`"
+    - "`WITH a AS (SELECT AVG(salary) FROM e) SELECT * FROM a`"
+  answer: 1
+  explain: |
+    Correlated subquery tham chiếu tới cột của query ngoài (`e.dept`), nên về logic được tính lại cho từng dòng ngoài. Các câu còn lại tính một lần, độc lập với query ngoài.
+
+- id: sub-recursive
+  topic: Subquery & CTE
+  level: Medium
+  question: Trong `WITH RECURSIVE`, cấu trúc nào đúng?
+  options:
+    - "Phần neo (anchor) `UNION ALL` phần đệ quy tham chiếu tới chính CTE"
+    - "Chỉ cần một câu SELECT tham chiếu tới chính CTE"
+    - "Phần đệ quy đặt trước, phần neo đặt sau"
+    - "Bắt buộc dùng `JOIN LATERAL`"
+  answer: 0
+  explain: |
+    Phần neo chạy một lần tạo các dòng khởi đầu; phần đệ quy chạy lặp, mỗi lần dùng các dòng mới của vòng trước, tới khi không sinh thêm dòng nào. Dùng `UNION` (khử trùng) thay `UNION ALL` để tránh lặp vô hạn trên đồ thị có chu trình.
+  ref: problems/recursive
+
+- id: fn-vs-proc
+  topic: Function & Procedure
+  level: Easy
+  question: Phát biểu nào **đúng** trong PostgreSQL?
+  options:
+    - "Procedure dùng được trong SELECT: `SELECT transfer(1, 2, 10)`"
+    - "Function được `COMMIT` bên trong thân hàm"
+    - "Procedure gọi bằng `CALL` và được `COMMIT`/`ROLLBACK` bên trong (khi CALL không nằm trong transaction mở sẵn)"
+    - "Function và procedure giống nhau, chỉ khác tên"
+  answer: 2
+  explain: |
+    Function trả giá trị, dùng trong câu SQL, luôn chạy bên trong transaction của người gọi nên không commit được. Procedure là một hành động riêng (`CALL`), được quản lý transaction. `SELECT transfer(...)` báo lỗi `transfer(...) is a procedure`.
+  ref: grinding/sql-functions-procedures.md, Phần 0
+
+- id: fn-strict
+  topic: Function & Procedure
+  level: Medium
+  question: Hàm sau trả về gì khi gọi `h(NULL)`?
+  code: |
+    CREATE FUNCTION h(x INT) RETURNS INT
+    LANGUAGE sql STRICT
+    AS 'SELECT 1';
+  options:
+    - "1"
+    - "NULL"
+    - "0"
+    - "Báo lỗi"
+  answer: 1
+  explain: |
+    `STRICT` = nếu có tham số NULL thì trả NULL ngay, **không chạy thân hàm**. Đừng dùng `STRICT` khi NULL có nghĩa riêng (ví dụ discount NULL = không giảm giá).
+  ref: grinding/sql-functions-procedures.md, 2.2
+
+- id: fn-volatility-read
+  topic: Function & Procedure
+  level: Medium
+  question: Hàm **đọc** bảng `holidays` (không ghi gì) nên khai báo volatility nào?
+  options:
+    - "IMMUTABLE"
+    - "STABLE"
+    - "VOLATILE bắt buộc"
+    - "Không cần khai báo, PostgreSQL tự nhận biết"
+  answer: 1
+  explain: |
+    `STABLE`: kết quả không đổi trong một câu lệnh, được đọc bảng. `IMMUTABLE` hứa rằng kết quả **chỉ** phụ thuộc tham số; khai sai thì planner có thể dùng kết quả cũ. PostgreSQL không tự suy ra; mặc định là `VOLATILE`.
+  ref: grinding/sql-functions-procedures.md, 8.1
+
+- id: fn-expression-index
+  topic: Function & Procedure
+  level: Hard
+  question: Muốn `CREATE INDEX ON users (my_func(email))`, hàm `my_func` phải là?
+  options:
+    - "VOLATILE"
+    - "STABLE"
+    - "IMMUTABLE"
+    - "SECURITY DEFINER"
+  answer: 2
+  explain: |
+    Giá trị trong index được tính lúc ghi và dùng lại mãi về sau, nên hàm phải luôn cho cùng kết quả với cùng đầu vào: `IMMUTABLE`. Dùng hàm STABLE/VOLATILE sẽ báo `functions in index expression must be marked IMMUTABLE`.
+    Ngoại lệ dễ gây nhầm: một hàm `LANGUAGE sql` đơn giản có thể được **inline** (ví dụ hàm STABLE chỉ có `SELECT lower(t)` được thay bằng `lower(email)`, vốn IMMUTABLE) nên vẫn tạo được index. Đừng dựa vào điều này; hãy khai báo volatility đúng.
+  ref: grinding/sql-functions-procedures.md, 8.2
+
+- id: fn-ambiguous
+  topic: Function & Procedure
+  level: Hard
+  question: Gọi `SELECT * FROM top_customers(3)` thì chuyện gì xảy ra?
+  code: |
+    CREATE FUNCTION top_customers(p_n INT)
+    RETURNS TABLE (customer_id INT, total NUMERIC)
+    LANGUAGE plpgsql AS $$
+    BEGIN
+      RETURN QUERY
+      SELECT customer_id, SUM(amount)::NUMERIC
+      FROM orders GROUP BY customer_id LIMIT p_n;
+    END $$;
+  options:
+    - "Chạy đúng"
+    - "Lỗi: column reference \"customer_id\" is ambiguous"
+    - "Trả về 0 dòng"
+    - "Lỗi: function does not exist"
+  answer: 1
+  explain: |
+    Cột output của `RETURNS TABLE` là biến PL/pgSQL, trùng tên cột `orders.customer_id`. Sửa: đặt bí danh bảng và ghi `o.customer_id`, hoặc thêm `#variable_conflict use_column`.
+  ref: grinding/sql-functions-procedures.md, 4.3
+
+- id: fn-return-type
+  topic: Function & Procedure
+  level: Hard
+  question: "`RETURNS TABLE (customer_id INT, total NUMERIC)` với `RETURN QUERY SELECT o.customer_id, SUM(o.amount) ...`, trong đó `amount` là `INT`. Kết quả?"
+  options:
+    - "Chạy đúng, PostgreSQL tự ép kiểu"
+    - "Lỗi: structure of query does not match function result type (bigint vs numeric)"
+    - "Cột total bị làm tròn"
+    - "Lỗi: SUM không dùng được trong function"
+  answer: 1
+  explain: |
+    `SUM(INT)` trả `BIGINT`. `RETURN QUERY` đòi khớp **chính xác** từng kiểu, không tự ép. Sửa: `SUM(o.amount)::NUMERIC`. Tương tự `COUNT(*)` là `BIGINT`.
+  ref: grinding/sql-functions-procedures.md, 4.3
+
+- id: fn-select-into-none
+  topic: Function & Procedure
+  level: Medium
+  question: Trong PL/pgSQL, `SELECT a INTO v FROM t WHERE a = 99;` không tìm thấy dòng nào. Điều gì xảy ra?
+  options:
+    - "Báo lỗi no_data_found"
+    - "v = NULL, FOUND = false, hàm chạy tiếp"
+    - "v giữ giá trị cũ, FOUND = true"
+    - "Hàm trả về NULL ngay lập tức"
+  answer: 1
+  explain: |
+    Không có `STRICT` thì 0 dòng → biến là NULL và `FOUND` = false, không lỗi. Phải tự kiểm tra `IF NOT FOUND THEN ...`. Viết `INTO STRICT` thì 0 dòng hoặc nhiều dòng đều báo lỗi.
+  ref: grinding/sql-functions-procedures.md, 3.1
+
+- id: fn-proc-only
+  topic: Function & Procedure
+  level: Medium
+  question: Những lệnh nào dùng được trong **procedure** nhưng **không** dùng được trong function? (chọn tất cả)
+  options:
+    - "`COMMIT`"
+    - "`ROLLBACK`"
+    - "`RAISE EXCEPTION`"
+    - "`SELECT ... INTO`"
+  answer: [0, 1]
+  explain: |
+    Chỉ procedure mới điều khiển transaction (`COMMIT`, `ROLLBACK`). `RAISE` và `SELECT INTO` dùng được ở cả hai.
+  ref: grinding/sql-functions-procedures.md, 5.2
+
+- id: fn-exception-cost
+  topic: Function & Procedure
+  level: Hard
+  question: Vì sao không nên đặt khối `BEGIN ... EXCEPTION WHEN ... END` trong một hàm gọi cho hàng triệu dòng?
+  options:
+    - "Mỗi khối EXCEPTION tạo một subtransaction, tốn chi phí"
+    - "EXCEPTION làm hàm không trả về giá trị"
+    - "EXCEPTION chỉ dùng được trong procedure"
+    - "EXCEPTION làm mất index"
+  answer: 0
+  explain: |
+    Khối có `EXCEPTION` phải tạo savepoint (subtransaction) mỗi lần vào khối để có thể hủy phần đã làm. Trên PostgreSQL 16, kiểm tra trước bằng `pg_input_is_valid(text, 'integer')` thì không cần bắt lỗi.
+  ref: grinding/sql-functions-procedures.md, 7.3
+
+- id: fn-when-others
+  topic: Function & Procedure
+  level: Medium
+  question: Vấn đề lớn nhất của `EXCEPTION WHEN OTHERS THEN RETURN NULL;` là gì?
+  options:
+    - "Không bắt được lỗi chia cho 0"
+    - "Nuốt cả lỗi lập trình (sai tên cột, sai bảng), dữ liệu sai thành NULL mà không ai biết"
+    - "Cú pháp không hợp lệ"
+    - "Làm hàm chạy hai lần"
+  answer: 1
+  explain: |
+    Chỉ bắt những lỗi bạn biết trước và muốn xử lý (`invalid_text_representation`, `division_by_zero`…). Mọi lỗi khác phải nổi lên để được sửa.
+  ref: grinding/sql-functions-procedures.md, 7.3
+
+- id: trg-before-null
+  topic: Trigger
+  level: Medium
+  question: Một trigger `BEFORE UPDATE ... FOR EACH ROW` có hàm trigger `RETURN NULL`. Điều gì xảy ra với câu `UPDATE`?
+  options:
+    - "Dòng được cập nhật bình thường"
+    - "Thao tác trên dòng đó bị bỏ qua im lặng, không báo lỗi"
+    - "Báo lỗi"
+    - "Dòng bị xóa"
+  answer: 1
+  explain: |
+    Với `BEFORE ... FOR EACH ROW`, dòng được trả về là dòng sẽ được ghi. Trả NULL nghĩa là bỏ qua dòng này. Quên `RETURN NEW` là lỗi khiến mọi UPDATE "không có tác dụng" mà không báo gì.
+  ref: grinding/sql-functions-procedures.md, 6.3
+
+- id: trg-statement-new
+  topic: Trigger
+  level: Hard
+  question: Trong trigger `AFTER UPDATE ... FOR EACH STATEMENT`, biến `NEW` chứa gì?
+  options:
+    - "Dòng cuối cùng được cập nhật"
+    - "Tất cả các dòng được cập nhật"
+    - "NULL; muốn xem các dòng phải dùng transition table (`REFERENCING NEW TABLE AS ...`)"
+    - "Dòng đầu tiên được cập nhật"
+  answer: 2
+  explain: |
+    Trigger mức câu lệnh chạy một lần, không gắn với dòng nào, nên `NEW`/`OLD` là NULL. Audit từng dòng thì dùng `FOR EACH ROW`, hoặc statement-level với `REFERENCING OLD TABLE AS o NEW TABLE AS n`.
+  ref: grinding/sql-functions-procedures.md, 6.3
+
+- id: trg-distinct
+  topic: Trigger
+  level: Medium
+  question: "Trigger audit dùng `IF NEW.price <> OLD.price THEN INSERT INTO audit ...`. Trường hợp nào bị **bỏ sót**?"
+  options:
+    - "Giá từ 10 lên 20"
+    - "Giá từ NULL thành 30"
+    - "Giá từ 20 xuống 10"
+    - "Không bỏ sót trường hợp nào"
+  answer: 1
+  explain: |
+    `30 <> NULL` là NULL, `IF NULL` không chạy. Dùng `NEW.price IS DISTINCT FROM OLD.price`.
+  ref: grinding/sql-functions-procedures.md, 6.4
+
+- id: tx-default-isolation
+  topic: Transaction & Concurrency
+  level: Easy
+  question: Mức isolation mặc định của PostgreSQL là?
+  options:
+    - "READ UNCOMMITTED"
+    - "READ COMMITTED"
+    - "REPEATABLE READ"
+    - "SERIALIZABLE"
+  answer: 1
+  explain: |
+    `READ COMMITTED`: mỗi câu lệnh thấy dữ liệu đã commit tại thời điểm câu lệnh bắt đầu. PostgreSQL không có dirty read ở bất kỳ mức nào (READ UNCOMMITTED hoạt động như READ COMMITTED).
+
+- id: tx-lost-update
+  topic: Transaction & Concurrency
+  level: Medium
+  question: |
+    Hai phiên cùng chạy: đọc `balance` (100) bằng `SELECT`, trừ 30 ở phía ứng dụng, rồi `UPDATE accounts SET balance = 70`. Cách nào **ngăn** mất cập nhật (lost update)? (chọn tất cả)
+  options:
+    - "Đọc bằng `SELECT ... FOR UPDATE` trong cùng transaction với UPDATE"
+    - "Viết `UPDATE accounts SET balance = balance - 30 WHERE ...` (tính ngay trong câu UPDATE)"
+    - "Thêm `ORDER BY` vào câu SELECT"
+    - "Tạo index trên account_id"
+  answer: [0, 1]
+  explain: |
+    `FOR UPDATE` khóa dòng, phiên thứ hai phải chờ rồi đọc số dư mới. `balance = balance - 30` là thao tác nguyên tử trên giá trị hiện tại của dòng. Index và ORDER BY không liên quan.
+  ref: grinding/sql-functions-procedures.md, 5.2
+
+- id: tx-deadlock
+  topic: Transaction & Concurrency
+  level: Hard
+  question: Phiên 1 chuyển tiền A → B, phiên 2 chuyển B → A cùng lúc, mỗi phiên khóa tài khoản nguồn trước. Cách tránh deadlock phổ biến nhất?
+  options:
+    - "Tăng statement_timeout"
+    - "Luôn khóa các tài khoản theo một thứ tự cố định (ví dụ id nhỏ trước)"
+    - "Dùng READ UNCOMMITTED"
+    - "Bỏ transaction"
+  answer: 1
+  explain: |
+    Deadlock xảy ra khi hai phiên giữ khóa theo thứ tự ngược nhau. Khóa theo thứ tự cố định (`SELECT ... WHERE account_id IN (a, b) ORDER BY account_id FOR UPDATE`) loại bỏ vòng chờ. PostgreSQL phát hiện deadlock và hủy một phiên, nhưng phía ứng dụng vẫn phải thử lại.
+
+- id: tx-aborted
+  topic: Transaction & Concurrency
+  level: Medium
+  question: Trong một transaction (`BEGIN`), câu lệnh thứ 2 bị lỗi. Câu lệnh thứ 3 (hoàn toàn hợp lệ) sẽ?
+  options:
+    - "Chạy bình thường"
+    - "Bị từ chối: current transaction is aborted, commands ignored until end of transaction block"
+    - "Chạy và tự động commit câu 1"
+    - "Chạy lại câu 2"
+  answer: 1
+  explain: |
+    PostgreSQL đánh dấu cả transaction là hỏng; mọi lệnh sau đó bị từ chối tới khi `ROLLBACK` (hoặc `ROLLBACK TO SAVEPOINT` nếu đã đặt savepoint trước câu lỗi). Đây là khác biệt so với một số hệ quản trị khác.
+
+- id: idx-function-where
+  topic: Index & Performance
+  level: Medium
+  question: Có index B-tree trên `users(email)`. Câu `WHERE lower(email) = 'a@x.com'` có dùng được index đó không?
+  options:
+    - "Có"
+    - "Không; cần index biểu thức `CREATE INDEX ON users (lower(email))`"
+    - "Chỉ khi bảng nhỏ"
+    - "Chỉ khi thêm LIMIT"
+  answer: 1
+  explain: |
+    Index lưu giá trị `email`, không phải `lower(email)`; bọc hàm quanh cột làm điều kiện không dùng được index (non-sargable). Index biểu thức lưu sẵn `lower(email)`.
+  ref: grinding/sql-common-pitfalls.md, B3
+
+- id: idx-composite
+  topic: Index & Performance
+  level: Medium
+  question: Với PostgreSQL 16, index B-tree trên `(a, b)` hỗ trợ tốt nhất điều kiện nào? (chọn tất cả)
+  options:
+    - "`WHERE a = 1`"
+    - "`WHERE a = 1 AND b = 2`"
+    - "`WHERE b = 2`"
+    - "`WHERE a = 1 AND b > 5`"
+  answer: [0, 1, 3]
+  explain: |
+    B-tree nhiều cột được sắp theo `a` rồi tới `b`, nên hiệu quả khi điều kiện có cột đầu (`a`). Chỉ lọc `b` thì phải quét gần hết index. (PostgreSQL 18 có thêm *skip scan* giúp trường hợp này khi `a` có ít giá trị khác nhau, nhưng PostgreSQL 16 thì chưa.)
+
+- id: idx-like-prefix
+  topic: Index & Performance
+  level: Medium
+  question: Điều kiện nào dùng được index B-tree thông thường trên `name` (collation C hoặc index `text_pattern_ops`)?
+  options:
+    - "`name LIKE 'abc%'`"
+    - "`name LIKE '%abc'`"
+    - "`name LIKE '%abc%'`"
+    - "`lower(name) LIKE 'abc%'`"
+  answer: 0
+  explain: |
+    Tiền tố cố định (`'abc%'`) chuyển được thành khoảng quét `>= 'abc' AND < 'abd'`. Ký tự đại diện ở đầu thì không; cần index trigram (`pg_trgm` + GIN). Bọc `lower()` thì cần index biểu thức.
+
+- id: idx-explain-analyze
+  topic: Index & Performance
+  level: Easy
+  question: "`EXPLAIN ANALYZE UPDATE accounts SET balance = 0;` làm gì?"
+  options:
+    - "Chỉ in kế hoạch, không chạy"
+    - "Chạy thật câu UPDATE và in kế hoạch kèm thời gian thực tế"
+    - "Báo lỗi vì EXPLAIN chỉ dùng cho SELECT"
+    - "Chạy rồi tự động rollback"
+  answer: 1
+  explain: |
+    `EXPLAIN` chỉ ước lượng; `EXPLAIN ANALYZE` **thực thi** câu lệnh để đo. Với câu ghi dữ liệu, bọc trong `BEGIN; EXPLAIN ANALYZE ...; ROLLBACK;`.
+
+- id: dm-grain
+  topic: Data Modeling
+  level: Easy
+  question: Khi thiết kế fact table, "grain" là gì?
+  options:
+    - "Số cột của bảng"
+    - "Ý nghĩa của **một dòng** trong bảng (ví dụ: một dòng sản phẩm trong một đơn hàng)"
+    - "Kiểu dữ liệu của khóa chính"
+    - "Tần suất load dữ liệu"
+  answer: 1
+  explain: |
+    Grain là quyết định đầu tiên trong mô hình chiều (Kimball): mỗi dòng đại diện cho cái gì. Mọi measure và dimension phải khớp grain. Trộn hai grain (dòng đơn hàng và dòng sản phẩm) trong một bảng sẽ gây cộng trùng.
+
+- id: dm-scd2
+  topic: Data Modeling
+  level: Medium
+  question: Khách hàng chuyển từ Hà Nội vào TP.HCM; báo cáo doanh thu cũ phải vẫn tính theo Hà Nội. Dùng kiểu SCD nào cho dimension customer?
+  options:
+    - "Type 1: ghi đè giá trị cũ"
+    - "Type 2: thêm dòng mới với valid_from / valid_to / is_current, giữ dòng cũ"
+    - "Type 0: không cho phép đổi"
+    - "Xóa khách hàng cũ, tạo khách hàng mới cùng id"
+  answer: 1
+  explain: |
+    SCD Type 2 lưu lịch sử bằng nhiều dòng cho cùng một khách, mỗi dòng có surrogate key riêng. Fact table trỏ tới surrogate key của phiên bản đúng tại thời điểm giao dịch nên báo cáo cũ không đổi. Type 1 ghi đè làm mất lịch sử.
+
+- id: dm-surrogate
+  topic: Data Modeling
+  level: Medium
+  question: Vì sao dimension SCD Type 2 cần **surrogate key** thay vì dùng natural key (mã khách hàng) làm khóa chính?
+  options:
+    - "Vì natural key luôn là chuỗi"
+    - "Vì một natural key có nhiều dòng (nhiều phiên bản), không thể là khóa chính"
+    - "Vì surrogate key nhanh hơn trong mọi trường hợp"
+    - "Vì PostgreSQL bắt buộc"
+  answer: 1
+  explain: |
+    Mỗi lần đổi thuộc tính lại có thêm một dòng với cùng mã khách, nên mã khách không còn duy nhất. Surrogate key (số tăng dần) định danh từng phiên bản. Ngoài ra nó còn che chắn mô hình khỏi việc hệ thống nguồn đổi mã.
+
+- id: dm-semi-additive
+  topic: Data Modeling
+  level: Hard
+  question: Measure nào là **semi-additive** (cộng được theo một số chiều nhưng không cộng được theo thời gian)?
+  options:
+    - "Số tiền của một giao dịch"
+    - "Số dư tài khoản cuối ngày"
+    - "Số lượng sản phẩm bán ra"
+    - "Đơn giá sản phẩm"
+  answer: 1
+  explain: |
+    Cộng số dư của nhiều tài khoản trong cùng một ngày thì có nghĩa, nhưng cộng số dư của 30 ngày thì không (phải lấy số cuối kỳ hoặc trung bình). Số tiền giao dịch, số lượng là additive. Đơn giá là non-additive (không cộng được theo chiều nào).
+
+- id: dm-3nf
+  topic: Data Modeling
+  level: Medium
+  question: "Bảng `orders(order_id, customer_id, customer_city, amount)` vi phạm dạng chuẩn nào và vì sao?"
+  options:
+    - "1NF, vì có giá trị lặp"
+    - "3NF, vì customer_city phụ thuộc vào customer_id (phụ thuộc bắc cầu), không phụ thuộc trực tiếp vào order_id"
+    - "2NF, vì khóa chính có hai cột"
+    - "Không vi phạm"
+  answer: 1
+  explain: |
+    `order_id → customer_id → customer_city` là phụ thuộc bắc cầu. Hệ quả: khách đổi thành phố phải sửa nhiều dòng (update anomaly). Chuẩn hóa: chuyển `customer_city` sang bảng `customers`. (Trong kho dữ liệu, cố ý phi chuẩn hóa như vậy ở dimension là bình thường.)
+
+- id: dm-many-to-many
+  topic: Data Modeling
+  level: Easy
+  question: Sinh viên đăng ký nhiều môn, mỗi môn có nhiều sinh viên. Mô hình đúng là?
+  options:
+    - "Thêm cột course_ids (mảng) vào bảng students"
+    - "Bảng trung gian enrollments(student_id, course_id, ...) với khóa chính (student_id, course_id)"
+    - "Thêm cột student_id vào bảng courses"
+    - "Gộp hai bảng thành một"
+  answer: 1
+  explain: |
+    Quan hệ nhiều-nhiều cần bảng trung gian (junction / bridge table). Bảng này còn chứa được thuộc tính của chính quan hệ (ngày đăng ký, điểm số).
+
+- id: dm-star
+  topic: Data Modeling
+  level: Easy
+  question: Khác biệt chính giữa star schema và snowflake schema?
+  options:
+    - "Star schema không có fact table"
+    - "Star schema để dimension phi chuẩn hóa (một bảng mỗi chiều); snowflake tách dimension thành nhiều bảng chuẩn hóa"
+    - "Snowflake schema chỉ dùng được trên Snowflake"
+    - "Star schema không dùng khóa ngoại"
+  answer: 1
+  explain: |
+    Star: fact ở giữa, mỗi dimension là một bảng rộng (ví dụ `dim_product` chứa luôn category). Ít JOIN, dễ query, phổ biến cho BI. Snowflake: `dim_product → dim_category → ...`, tiết kiệm lưu trữ và dễ bảo trì hơn nhưng nhiều JOIN.
