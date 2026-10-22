@@ -24,3 +24,19 @@ products
 
 -- QUERY
 -- write your query here
+WITH product_stat AS (
+  SELECT
+    name,
+    category,
+    price,
+    ROUND(AVG(price) OVER (PARTITION BY category)::numeric, 1) AS category_avg
+  FROM products
+)
+SELECT
+  name,
+  category,
+  price,
+  category_avg
+FROM product_stat
+WHERE price > category_avg
+ORDER BY category, name

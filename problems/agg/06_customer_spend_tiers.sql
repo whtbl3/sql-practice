@@ -28,3 +28,15 @@ orders
 
 -- QUERY
 -- write your query here
+SELECT
+  customer,
+  COUNT(*) AS orders,
+  SUM(amount) AS total_spent,
+  CASE 
+    WHEN SUM(amount) >= 1000 THEN 'Gold'
+    WHEN SUM(amount) >= 500 THEN 'Silver'
+    ELSE 'Bronze'
+  END AS tier
+FROM orders
+GROUP BY customer
+ORDER BY total_spent DESC, customer

@@ -37,3 +37,18 @@ cards
 
 -- QUERY
 -- write your query here
+WITH card_stat AS (
+  SELECT team_id, COUNT(*) AS cards
+  FROM cards
+  GROUP BY team_id
+),
+goal_stat AS (
+  SELECT team_id, COUNT(*) AS goals
+  FROM goals
+  GROUP BY team_id
+)
+SELECT t.name AS team, COALESCE(gs.goals, 0) AS goals, COALESCE(cs.cards, 0) AS cards
+FROM teams t 
+  LEFT JOIN card_stat cs ON t.team_id = cs.team_id
+  LEFT JOIN goal_stat gs ON t.team_id = gs.team_id      
+ORDER BY t.name     

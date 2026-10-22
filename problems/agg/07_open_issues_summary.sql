@@ -40,3 +40,29 @@ products
 
 -- QUERY
 -- write your query here
+WITH t AS (
+  SELECT 
+    'Complaint' AS type,
+    COUNT(*) FILTER (WHERE status = 'Pending') AS quantity
+  FROM complaints
+
+  UNION ALL
+
+  SELECT
+    'Cancelled Order' AS type,
+    COUNT(*) FILTER (WHERE status = 'Cancelled') AS quantity
+  FROM orders
+
+  UNION ALL 
+
+  SELECT
+    'Out of Stock Product' AS type,
+    COUNT(*) FILTER (WHERE status = 'Out of Stock') AS quantity
+  FROM products
+)
+SELECT
+  type,
+  quantity,
+  ROUND(quantity * 100.0 / SUM(quantity) OVER (), 1) AS pct
+FROM t
+ORDER BY quantity DESC, type

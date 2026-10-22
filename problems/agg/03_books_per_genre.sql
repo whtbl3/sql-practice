@@ -32,3 +32,20 @@ books
 
 -- QUERY
 -- write your query here
+WITH books_stat AS (
+  SELECT
+    genre_id,
+    COUNT(*) AS book_count,
+    ROUND(AVG(price)) AS avg_price,
+    MAX(price) - MIN(price) AS price_range
+  FROM books
+  GROUP BY genre_id
+)
+SELECT
+  g.name AS genre,
+  COALESCE(bs.book_count, 0)  AS book_count,
+  COALESCE(bs.avg_price, 0)   AS avg_price,
+  COALESCE(bs.price_range, 0) AS price_range
+FROM genres g
+  LEFT JOIN books_stat bs ON g.genre_id = bs.genre_id
+ORDER BY g.name;

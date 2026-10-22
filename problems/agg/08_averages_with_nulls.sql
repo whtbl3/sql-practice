@@ -28,3 +28,12 @@ ratings
 
 -- QUERY
 -- write your query here
+SELECT
+  product,
+  COUNT(*) AS total_rows,
+  COUNT(rating) AS rated_rows,
+  ROUND(AVG(rating), 1) AS avg_rating,
+  ROUND(AVG(COALESCE(rating, 0)), 1) AS avg_with_zeros
+FROM ratings
+GROUP BY product
+ORDER BY product
