@@ -918,6 +918,73 @@ GROUP BY department;
 
 ---
 
+### D3. Dòng tổng phụ: `ROLLUP` / `GROUPING SETS` và `GROUPING()` (`agg/09`)
+
+**Nguyên nhân.** `GROUP BY ROLLUP (a, b)` sinh thêm các dòng tổng phụ, trong đó cột đã được "gộp hết" mang giá trị `NULL`. Gắn nhãn bằng `COALESCE(cột, 'Tổng')` sẽ **nhầm** NULL thật trong dữ liệu (cửa hàng không rõ tên) với NULL của dòng tổng. `GROUPING(cột)` trả 1 khi cột bị gộp ở dòng đó, 0 khi là giá trị thật (kể cả NULL thật).
+
+**Input** — Table `sales`
+
+| region | store | revenue |
+| --- | --- | --- |
+| North | HN-01 | 100 |
+| North | NULL | 30 |
+| South | Q1 | 200 |
+
+**Task:** Doanh thu từng cửa hàng (cửa hàng NULL ghi `(unknown)`), dòng `Region total` sau mỗi miền, dòng `Grand total` cuối cùng.
+
+**Expected Output**
+
+| region | store | revenue |
+| --- | --- | --- |
+| North | HN-01 | 100 |
+| North | (unknown) | 30 |
+| North | Region total | 130 |
+| South | Q1 | 200 |
+| South | Region total | 200 |
+| Grand total | | 330 |
+
+**Wrong Query**
+
+```sql
+SELECT COALESCE(region, 'Grand total') AS region, COALESCE(store, 'Region total') AS store, SUM(revenue) AS revenue
+FROM sales
+GROUP BY ROLLUP (region, store)
+ORDER BY sales.region, sales.store;
+```
+
+**Output**
+
+| region | store | revenue |
+| --- | --- | --- |
+| North | HN-01 | 100 |
+| North | Region total | 30 |
+| North | Region total | 130 |
+| South | Q1 | 200 |
+| South | Region total | 200 |
+| Grand total | Region total | 330 |
+
+Miền North có hai dòng "Region total"; dòng tổng cộng cũng bị gắn "Region total".
+
+**Correct Query**
+
+```sql
+SELECT CASE WHEN GROUPING(region) = 1 THEN 'Grand total' ELSE region END AS region,
+       CASE WHEN GROUPING(region) = 1 THEN ''
+            WHEN GROUPING(store)  = 1 THEN 'Region total'
+            ELSE COALESCE(store, '(unknown)') END AS store,
+       SUM(revenue) AS revenue
+FROM sales
+GROUP BY ROLLUP (region, store)
+ORDER BY GROUPING(region), sales.region, GROUPING(store), sales.store;   -- tổng phụ đứng sau chi tiết
+```
+
+> - `ROLLUP (a, b, c)` = `GROUPING SETS ((a, b, c), (a, b), (a), ())`: tổng theo **cấp bậc**. `CUBE (a, b)` = mọi tổ hợp, kể cả `(b)` riêng. `GROUPING SETS` liệt kê đúng các nhóm cần.
+> - `GROUPING(a, b, c)` trả về **mặt nạ bit** (a là bit cao): chi tiết = 0, tổng theo (a, b) = 1, theo (a) = 3, tổng cộng = 7. Dùng để gắn cột `level`.
+> - `ORDER BY` theo **cột gốc** (`sales.region`) và `GROUPING(...)`, không theo alias đã đổi chữ, để "Grand total" không bị xếp theo bảng chữ cái.
+> - Bảng rỗng: `ROLLUP` vẫn sinh **một dòng tổng cộng** với `SUM` = NULL (nhóm `()` luôn tồn tại, giống A6).
+
+---
+
 ## E. Subquery, tập hợp và xếp hạng
 
 ### E1. Tìm dữ liệu "không tồn tại" (Anti-join)
@@ -1037,6 +1104,68 @@ WHERE NOT EXISTS (SELECT 1 FROM Promotions p WHERE p.customer_id = c.id);
 
 ---
 
+#### E1c. Tổ hợp chưa từng có: anti-join trên lưới sinh ra (`antijoin/04`)
+
+**Nguyên nhân.** `LEFT JOIN ... WHERE x.id IS NULL` chỉ tìm được những **thực thể** không có dòng nào (cửa hàng chưa từng bán). Câu hỏi "cửa hàng nào, **tháng nào** không bán được" hỏi về một **tổ hợp** (cửa hàng × tháng). Tổ hợp đó không có trong bảng nào, nên phải sinh lưới các tổ hợp cần có trước, rồi mới anti-join.
+
+**Input**
+
+Table `stores`
+
+| store_id | store_name |
+| --- | --- |
+| 1 | A |
+| 2 | B |
+
+Table `sales`
+
+| sale_id | store_id | sale_date |
+| --- | --- | --- |
+| 1 | 1 | 2024-01-10 |
+| 2 | 1 | 2024-02-05 |
+| 3 | 2 | 2024-01-20 |
+
+**Task:** Trong tháng 01 và 02/2024, cửa hàng nào có tháng không bán được gì?
+
+**Expected Output**
+
+| store_id | month |
+| --- | --- |
+| 2 | 2024-02 |
+
+**Wrong Query**
+
+```sql
+SELECT s.store_id, TO_CHAR(x.sale_date, 'YYYY-MM') AS month
+FROM stores s
+LEFT JOIN sales x ON x.store_id = s.store_id
+WHERE x.sale_id IS NULL;
+```
+
+**Output**
+
+| store_id | month |
+| --- | --- |
+
+(0 dòng: cửa hàng nào cũng có ít nhất một đơn, còn tháng thì lấy từ chính `sales` nên tháng trống không bao giờ xuất hiện.)
+
+**Correct Query**
+
+```sql
+SELECT s.store_id, TO_CHAR(m, 'YYYY-MM') AS month
+FROM stores s
+CROSS JOIN generate_series(DATE '2024-01-01', DATE '2024-02-01', INTERVAL '1 month') AS m   -- lưới cần có
+WHERE NOT EXISTS (
+  SELECT 1 FROM sales x
+  WHERE x.store_id = s.store_id
+    AND x.sale_date >= m AND x.sale_date < m + INTERVAL '1 month'
+);
+```
+
+> Muốn **đủ lưới với số 0** (zero-fill) thay vì chỉ các ô trống: giữ nguyên `CROSS JOIN`, đổi `NOT EXISTS` thành `LEFT JOIN sales ... GROUP BY store, m` và `COALESCE(SUM(amount), 0)`. Đây là dạng 2 chiều của `misc/05`.
+
+---
+
 ### E2. Tìm thực thể thỏa *đồng thời* nhiều điều kiện (Relational Division)
 
 **Nguyên nhân.** Một dòng không thể vừa là `'Python'` vừa là `'SQL'`; `OR` trả về ai có *ít nhất một* kỹ năng. Cần đếm trên nhóm. (Cách giải bằng `INTERSECT` xem G2.)
@@ -1082,6 +1211,62 @@ WHERE skill IN ('Python', 'SQL')
 GROUP BY name
 HAVING COUNT(DISTINCT skill) = 2;   -- 2 = số kỹ năng yêu cầu
 ```
+
+
+#### E2b. Chia chính xác: đúng bộ, không thiếu không thừa (`agg/10`)
+
+**Nguyên nhân.** E2 trả lời "có **ít nhất** đủ các phần tử". Khi đề đòi **đúng bằng** (combo giảm giá chỉ áp dụng khi đơn có đúng các món của combo), lọc `WHERE item IN (...)` trước khi đếm sẽ **giấu mất các món thừa**, nên đơn có thêm món ngoài combo vẫn qua.
+
+**Input**
+
+Table `combo_items` (combo C = {A, B}) và Table `order_items`
+
+| order_id | item |
+| --- | --- |
+| 1 | A |
+| 1 | B |
+| 2 | A |
+| 2 | B |
+| 2 | X |
+| 3 | A |
+| 3 | A |
+
+**Task:** Đơn nào có đúng các món của combo C?
+
+**Expected Output**
+
+| order_id |
+| --- |
+| 1 |
+
+**Wrong Query**
+
+```sql
+SELECT order_id FROM order_items
+WHERE item IN (SELECT item FROM combo_items WHERE combo = 'C')
+GROUP BY order_id
+HAVING COUNT(DISTINCT item) = 2;
+```
+
+**Output**
+
+| order_id |
+| --- |
+| 1 |
+| 2 |
+
+Đơn 2 có thêm món X nhưng `WHERE` đã loại X trước khi đếm.
+
+**Correct Query**
+
+```sql
+SELECT order_id FROM order_items
+GROUP BY order_id
+HAVING COUNT(DISTINCT item) = 2                                         -- đơn có đúng 2 món khác nhau
+   AND COUNT(DISTINCT item) FILTER (WHERE item IN (SELECT item FROM combo_items WHERE combo = 'C')) = 2;   -- và cả 2 thuộc combo
+```
+
+> Nhiều combo cùng lúc: `JOIN combo_items ON item`, `GROUP BY order, combo`, `HAVING COUNT(*) = số món của đơn AND COUNT(*) = số món của combo` (sau khi `DISTINCT` các dòng trùng trong đơn). Xem lời giải `agg/10`. `COUNT(DISTINCT item)` thay vì `COUNT(*)` để món lặp hai dòng (đơn 3) không đếm thành 2 món.
 
 
 
@@ -1629,6 +1814,8 @@ FROM Sales;
 
  (`RANGE` với độ lệch số: PostgreSQL, Oracle, MySQL 8 hỗ trợ; SQL Server chỉ hỗ trợ `UNBOUNDED` và `CURRENT ROW`.)
 
+**Với cột ngày, độ lệch là `INTERVAL`** (`window/14`): "3 tháng lịch gần nhất" trên bảng doanh thu tháng bị thiếu tháng là `RANGE BETWEEN INTERVAL '2 months' PRECEDING AND CURRENT ROW` trên cột `date` (ngày đầu tháng). `ROWS 2 PRECEDING` sẽ kéo sang tháng xa hơn đúng như ví dụ trên. `RANGE` có độ lệch cần **đúng một** cột `ORDER BY` kiểu số / ngày / timestamp; cột tháng dạng chuỗi `'2024-04'` không dùng được. Cách khác: sinh đủ tháng bằng `generate_series` + `LEFT JOIN` (0), rồi dùng `ROWS` (`misc/05`).
+
 **Cú pháp rút gọn → đầy đủ**
 
 | Cú pháp viết tắt | Cú pháp đầy đủ (SQL tự hiểu) | Phạm vi tính toán |
@@ -1693,6 +1880,106 @@ FROM DailyRevenue;
 
 
 > Cách khác tránh frame: `FIRST_VALUE(revenue) OVER (ORDER BY day DESC)` để lấy giá trị cuối. Quyết định theo nghiệp vụ cho dòng đầu của `LAG`: `NULL` (không có dữ liệu so sánh) hay `0`.
+
+> Bài luyện `window/13`: giá mở cửa / đóng cửa **của tháng** cạnh mỗi ngày giao dịch. Partition theo `ticker, DATE_TRUNC('month', trade_date)`, dùng chung một `WINDOW w AS (... ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)` cho cả `FIRST_VALUE` và `LAST_VALUE`.
+
+---
+
+### F4. Đỉnh lũy kế: `MAX() OVER (ORDER BY ...)` và drawdown (`window/15`)
+
+**Nguyên nhân.** "Giảm bao nhiêu so với đỉnh" cần đỉnh **tính tới thời điểm đó**. `MAX(nav) OVER ()` (không `ORDER BY`) lấy đỉnh của **cả chuỗi**, kể cả các ngày trong tương lai. `LAG` chỉ so với ngày liền trước. Ở đây frame mặc định của F2 (từ đầu tới dòng hiện tại) lại **đúng là thứ cần**.
+
+**Input** — Table `fund_nav`
+
+| d | nav |
+| --- | --- |
+| 2024-01-01 | 10 |
+| 2024-01-02 | 12 |
+| 2024-01-03 | 9 |
+| 2024-01-04 | 13 |
+
+**Task:** `drawdown_pct = (nav / đỉnh tới hôm đó − 1) × 100`, làm tròn 1 chữ số.
+
+**Expected Output**
+
+| d | nav | drawdown_pct |
+| --- | --- | --- |
+| 2024-01-01 | 10 | 0.0 |
+| 2024-01-02 | 12 | 0.0 |
+| 2024-01-03 | 9 | -25.0 |
+| 2024-01-04 | 13 | 0.0 |
+
+**Wrong Query**
+
+```sql
+SELECT d, nav, ROUND((nav::numeric / MAX(nav) OVER () - 1) * 100, 1) AS drawdown_pct
+FROM fund_nav;
+```
+
+**Output**
+
+| d | nav | drawdown_pct |
+| --- | --- | --- |
+| 2024-01-01 | 10 | -23.1 |
+| 2024-01-02 | 12 | -7.7 |
+| 2024-01-03 | 9 | -30.8 |
+| 2024-01-04 | 13 | 0.0 |
+
+**Correct Query**
+
+```sql
+SELECT d, nav, ROUND((nav::numeric / MAX(nav) OVER (ORDER BY d) - 1) * 100, 1) AS drawdown_pct
+FROM fund_nav;
+```
+
+> - **Max drawdown** = dòng có `drawdown` nhỏ nhất (`ORDER BY drawdown, d LIMIT 1`). Ngày đỉnh tương ứng: `MAX(d) FILTER (WHERE nav = peak) OVER (ORDER BY d)`. Aggregate window **nhận được `FILTER`**.
+> - Cùng mẫu: "kỷ lục mới" (`nav = MAX(...) OVER (ORDER BY d)`), "giá thấp nhất từ đầu năm" (`MIN ... OVER (PARTITION BY năm ORDER BY d)`). `window/12` dùng frame `1 PRECEDING` để loại chính dòng hiện tại.
+
+---
+
+### F5. Trung bình theo thời gian (TWAP): trọng số là thời lượng (`window/16`)
+
+**Nguyên nhân.** `AVG(price)` cho mỗi **lần cập nhật** cùng trọng số. Một giá chỉ tồn tại 1 phút được tính ngang với giá giữ cả giờ. Khi giá trị **giữ nguyên tới lần cập nhật sau** (giá, nhiệt độ, số dư, tồn kho), trung bình đúng phải nhân với thời lượng: `SUM(giá × thời lượng) / SUM(thời lượng)`.
+
+**Input** — Table `ticks` (phiên kết thúc 10:00)
+
+| ts | price |
+| --- | --- |
+| 2024-06-03 09:00:00 | 100 |
+| 2024-06-03 09:59:00 | 200 |
+
+**Task:** Giá trung bình theo thời gian của phiên 09:00–10:00.
+
+**Expected Output**
+
+| twap |
+| --- |
+| 101.67 |
+
+**Wrong Query**
+
+```sql
+SELECT ROUND(AVG(price), 2) AS avg_price FROM ticks;
+```
+
+**Output**
+
+| avg_price |
+| --- |
+| 150.00 |
+
+**Correct Query**
+
+```sql
+SELECT ROUND(SUM(price * secs) / SUM(secs), 2) AS twap
+FROM (
+  SELECT price,
+         EXTRACT(EPOCH FROM LEAD(ts, 1, TIMESTAMP '2024-06-03 10:00:00') OVER (ORDER BY ts) - ts) AS secs
+  FROM ticks
+) t;
+```
+
+> `LEAD(ts, 1, kết_thúc_phiên)`: tham số thứ 3 cho dòng cuối một điểm kết thúc (F3). `timestamp − timestamp` ra `interval`, `EXTRACT(EPOCH FROM ...)` đổi ra giây. Cùng công thức: số dư bình quân ngày của tài khoản, tồn kho bình quân.
 
 ---
 
@@ -1938,6 +2225,70 @@ Table `B`
 | Độ ưu tiên | Theo chuẩn SQL, `INTERSECT` ưu tiên cao hơn `UNION`/`EXCEPT`; một số DBMS (như Oracle) coi chúng ngang cấp, tính từ trái sang phải. **Luôn dùng ngoặc** khi trộn nhiều toán tử |
 | Khác biệt phương ngữ | Oracle dùng `MINUS` (bản mới có `EXCEPT`); MySQL chỉ có `INTERSECT`/`EXCEPT` từ 8.0.31; SQL Server, PostgreSQL hỗ trợ đầy đủ |
 | Hiệu năng | Mỗi toán tử khử trùng phải sort/hash toàn bộ kết quả. Với bảng lớn, `EXISTS` / `NOT EXISTS` thường nhanh hơn |
+
+---
+
+### G6. `EXCEPT` hay `NOT EXISTS`: khi nào `EXCEPT` cho kết quả sai (`antijoin/05`)
+
+**Nguyên nhân.** `EXCEPT` so sánh **toàn bộ các cột được chọn**, trả về **tập** (khử trùng), và coi `NULL` **bằng** `NULL` (G5). Ba điều này đúng khi chỉ cần danh sách khóa phân biệt. Nhưng khi cần **cả dòng** (id, tên…), giữ dòng trùng, hoặc khi đề nói "NULL không khớp với gì" thì phải dùng `NOT EXISTS`.
+
+**Input**
+
+Table `leads`
+
+| lead_id | full_name | phone |
+| --- | --- | --- |
+| 1 | An | 0901 |
+| 2 | Chi | NULL |
+| 3 | An | 0901 |
+
+Table `customers`
+
+| full_name | phone |
+| --- | --- |
+| Em | NULL |
+
+**Task:** Lead nào chưa thành khách (không có khách nào trùng số điện thoại; số NULL thì không khớp với ai)? Trả về đầy đủ từng lead.
+
+**Expected Output**
+
+| lead_id | full_name | phone |
+| --- | --- | --- |
+| 1 | An | 0901 |
+| 2 | Chi | NULL |
+| 3 | An | 0901 |
+
+**Wrong Query**
+
+```sql
+SELECT phone FROM leads
+EXCEPT
+SELECT phone FROM customers;
+```
+
+**Output**
+
+| phone |
+| --- |
+| 0901 |
+
+Mất `lead_id` và tên; hai lead 0901 gộp làm một; lead 2 biến mất vì `NULL EXCEPT NULL` coi là trùng.
+
+**Correct Query**
+
+```sql
+SELECT l.lead_id, l.full_name, l.phone
+FROM leads l
+WHERE NOT EXISTS (SELECT 1 FROM customers c WHERE c.phone = l.phone);   -- NULL = NULL là UNKNOWN: không khớp
+```
+
+> | Cần | Dùng |
+> | --- | --- |
+> | Danh sách khóa phân biệt, NULL coi như một giá trị | `EXCEPT` / `INTERSECT` |
+> | Cả dòng, giữ trùng lặp, so khớp theo vài cột, NULL không khớp | `NOT EXISTS` / `EXISTS` |
+> | Giữ trùng lặp theo số lần (multiset) | `EXCEPT ALL` / `INTERSECT ALL` |
+>
+> Ngược lại, nếu đề muốn NULL **khớp** NULL thì viết `c.phone IS NOT DISTINCT FROM l.phone` trong `NOT EXISTS`.
 
 ---
 

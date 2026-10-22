@@ -4,6 +4,7 @@
 --
 -- Task: Each unit has its own budget and a parent unit (NULL for the root). For every unit return
 --   name and total_budget = its own budget plus the budgets of all units below it. Sort by name.
+-- Learn: grinding/sql-recursive.md, mục 1.5
 
 -- INPUT
 units

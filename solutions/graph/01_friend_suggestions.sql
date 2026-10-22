@@ -1,0 +1,57 @@
+-- Problem graph/01: "People you may know" (friends of friends)  [Easy]
+-- Pattern: Graph: undirected edges -> both directions with UNION -> 2-hop self-join -> exclude self and direct friends
+-- Variant: a fixed 2 steps needs no recursion; count mutual friends with COUNT(DISTINCT)
+--
+-- Task: A Vietnamese social app stores each friendship once in friendships (either direction; the
+--   same pair may be stored twice by mistake). Suggest friends for user 1: every user at distance
+--   exactly 2 (a friend of one of user 1's friends, not user 1, not already a friend). Return
+--   user_id, name and mutual_friends (how many of user 1's friends they are friends with).
+--   Sort by mutual_friends DESC, user_id.
+-- Learn: grinding/sql-recursive.md, mục 2.1
+
+-- INPUT
+users
+| user_id | name |
+|---------|------|
+| 1       | Mark |
+| 2       | Lucy |
+| 3       | Hope |
+| 4       | Tony |
+| 5       | Vera |
+| 6       | Ken  |
+| 7       | Nora |
+
+friendships
+| user_a | user_b |
+|--------|--------|
+| 1      | 2      |
+| 3      | 1      |
+| 1      | 4      |
+| 2      | 5      |
+| 3      | 5      |
+| 4      | 5      |
+| 2      | 3      |
+| 4      | 6      |
+| 6      | 7      |
+
+-- EXPECTED
+| user_id | name | mutual_friends |
+|---------|------|----------------|
+| 5       | Vera | 3              |
+| 6       | Ken  | 1              |
+
+-- QUERY
+WITH edges AS (                                     -- both directions; UNION also drops duplicate pairs
+  SELECT user_a AS u, user_b AS v FROM friendships
+  UNION
+  SELECT user_b, user_a FROM friendships
+),
+friends AS (SELECT v AS f FROM edges WHERE u = 1)
+SELECT e.v AS user_id, us.name, COUNT(DISTINCT e.u) AS mutual_friends
+FROM friends fr
+JOIN edges e ON e.u = fr.f                          -- friends of my friends
+JOIN users us ON us.user_id = e.v
+WHERE e.v <> 1
+  AND e.v NOT IN (SELECT f FROM friends)            -- safe: f is never NULL here
+GROUP BY e.v, us.name
+ORDER BY mutual_friends DESC, user_id;
