@@ -4,7 +4,7 @@
 --
 -- Task: Return employees whose salary is above the average salary of all employees (NULL salaries
 --   are not part of the average). Sort by salary DESC, name.
--- Learn: grinding/sql-subquery-window.md, mục S1
+-- Learn: grinding/sql-subquery.md, B1
 
 -- INPUT
 employees

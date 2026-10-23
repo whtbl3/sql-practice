@@ -8,7 +8,7 @@
 --   sale_date order (only 3 or 4 rows near the ends). Return sale_date, revenue_m, rolling_avg
 --   (average of the window) and rolling_median (median of the window; average of the two middle
 --   values when the window has 4 rows), both rounded to 1 decimal. Sort by sale_date.
--- Learn: grinding/sql-analytics-patterns.md, mục 10.5
+-- Learn: grinding/sql-median.md, trung vị trượt
 
 -- INPUT
 daily_sales

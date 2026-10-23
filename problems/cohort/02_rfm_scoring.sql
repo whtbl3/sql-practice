@@ -7,7 +7,7 @@
 --   as-of date), frequency (number of orders), monetary (total amount), and r_score, f_score,
 --   m_score using NTILE(3) (higher score = better; break ties by customer_id ascending). Sort by
 --   customer_id.
--- Learn: grinding/sql-analytics-patterns.md, mục 2.3
+-- Learn: grinding/sql-rfm.md, B1–B3
 
 -- INPUT
 orders
@@ -28,3 +28,24 @@ orders
 
 -- QUERY
 -- write your query here
+WITH as_of AS (
+  SELECT MAX(order_date) + 1 AS as_of_date
+  FROM orders
+  WHERE status = 'Completed'
+),
+rfm AS (
+  SELECT
+    o.customer_id,
+    a.as_of_date - MAX(o.order_date) AS recency_days,
+    COUNT(*) AS frequency,
+    SUM(total_amount) AS monetary
+  FROM orders o CROSS JOIN as_of a
+  WHERE o.status = 'Completed'
+  GROUP BY o.customer_id, a.as_of_date
+)
+SELECT customer_id, recency_days, frequency, monetary,
+       NTILE(3) OVER (ORDER BY recency_days DESC, customer_id) AS r_score,
+       NTILE(3) OVER (ORDER BY frequency        , customer_id) AS f_score,
+       NTILE(3) OVER (ORDER BY monetary         , customer_id) AS m_score
+FROM rfm
+ORDER BY customer_id

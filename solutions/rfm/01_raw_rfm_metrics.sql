@@ -7,7 +7,7 @@
 --   customer with at least one delivered order return recency_days (as-of date minus the date
 --   of their latest delivered order; an order on the as-of date gives 0), frequency (number of
 --   delivered orders) and monetary (sum of amount_vnd). Sort by customer_id.
--- Learn: grinding/sql-analytics-patterns.md, mục 2.1–2.3
+-- Learn: grinding/sql-rfm.md, B1–B2
 
 -- INPUT
 orders

@@ -7,7 +7,7 @@
 --   A gap is the number of days between two consecutive purchase days of the same customer.
 --   For every customer with at least 2 purchase days return customer_id, purchase_days,
 --   min_gap, avg_gap (rounded to 1 decimal) and max_gap. Sort by customer_id.
--- Learn: grinding/sql-analytics-patterns.md, mục 9.2
+-- Learn: grinding/sql-purchase-gaps.md, B1–B3
 
 -- INPUT
 orders

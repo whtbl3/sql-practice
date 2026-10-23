@@ -6,7 +6,7 @@
 --   row per day. Find the run of consecutive rows (at least one day) with the highest total
 --   profit. Return ONE row: start_day, end_day, total_profit. On a tie keep the earliest
 --   start_day, then the earliest end_day. No rows when the table is empty.
--- Learn: grinding/sql-recursive.md, mục 3.3
+-- Learn: grinding/sql-dp.md, B2
 
 -- INPUT
 daily_profit

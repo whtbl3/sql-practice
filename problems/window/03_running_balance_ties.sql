@@ -5,7 +5,7 @@
 -- Task: Return every transaction with running_balance = sum of amount over all transactions up to
 --   and including this one, in order of txn_date then txn_id. Each row must add exactly its own
 --   amount, even when several transactions share a date. Sort by txn_date, txn_id.
--- Learn: grinding/sql-subquery-window.md, mục W3
+-- Learn: grinding/sql-window.md, B2–B3
 
 -- INPUT
 transactions

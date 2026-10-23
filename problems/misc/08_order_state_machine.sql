@@ -7,7 +7,7 @@
 --   For each order, sort its events by event_time; every event forms the pair (status of the
 --   previous event or NULL, its own status). Return every event whose pair is not in allowed:
 --   order_id, event_time, from_status, to_status. Sort by order_id, event_time.
--- Learn: grinding/sql-analytics-patterns.md, mục 14.2
+-- Learn: grinding/sql-state-machine.md, B1–B2
 
 -- INPUT
 allowed

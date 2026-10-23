@@ -11,7 +11,7 @@
 --   and rfm_code = the three scores concatenated as text, e.g. '323'.
 --   Return customer_id, recency_days, frequency, monetary, r_score, f_score, m_score, rfm_code.
 --   Sort by customer_id.
--- Learn: grinding/sql-analytics-patterns.md, mục 2.6
+-- Learn: grinding/sql-rfm.md, B1–B3
 
 -- INPUT
 customers

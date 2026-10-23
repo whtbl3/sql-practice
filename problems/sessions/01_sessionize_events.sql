@@ -5,7 +5,7 @@
 -- Task: A new session starts when the gap since the user's previous event is MORE than 30 minutes.
 --   Return user_id, session_no (1, 2, ... per user), session_start, session_end, events (count).
 --   Sort by user_id, session_no.
--- Learn: grinding/sql-analytics-patterns.md, mục 1.6e
+-- Learn: grinding/sql-gaps-islands.md, B3
 
 -- INPUT
 events

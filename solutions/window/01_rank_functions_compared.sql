@@ -5,7 +5,7 @@
 -- Task: Rank players by score, highest first. Return player, score, row_num (ROW_NUMBER, ties broken
 --   by player), rnk (RANK) and dense_rnk (DENSE_RANK). NULL scores rank last. Sort by score DESC
 --   (NULLs last), then player.
--- Learn: grinding/sql-subquery-window.md, mục W1
+-- Learn: grinding/sql-window.md, B4
 
 -- INPUT
 scores

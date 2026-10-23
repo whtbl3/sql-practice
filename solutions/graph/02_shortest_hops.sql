@@ -6,7 +6,7 @@
 --   both ways). Starting from 'Ben Thanh', return every stop that can be reached with the fewest
 --   number of links needed (hops; Ben Thanh itself has 0). Stops that cannot be reached are not
 --   returned. Sort by hops, stop.
--- Learn: grinding/sql-recursive.md, mục 2.2
+-- Learn: grinding/sql-recursive-cte.md, B3–B4
 
 -- INPUT
 links

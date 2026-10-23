@@ -7,7 +7,7 @@
 --   pair are possible). An account is on a cycle when following transfers from it can lead back
 --   to it. For every such account return account and cycle_len = the number of transfers in the
 --   shortest cycle through it. Sort by account.
--- Learn: grinding/sql-recursive.md, mục 2.4
+-- Learn: grinding/sql-recursive-cte.md, B3
 
 -- INPUT
 transfers

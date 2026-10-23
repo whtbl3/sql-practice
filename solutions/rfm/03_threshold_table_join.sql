@@ -8,7 +8,7 @@
 --   bound. If a value falls in no range (or is NULL) its score is 0. Return customer_id,
 --   r_score, f_score, m_score and rfm_code (the three scores concatenated, e.g. '524').
 --   Sort by customer_id.
--- Learn: grinding/sql-analytics-patterns.md, mục 2.10
+-- Learn: grinding/sql-rfm.md, B3
 
 -- INPUT
 customer_metrics

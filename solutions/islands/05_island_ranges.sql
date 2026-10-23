@@ -5,7 +5,7 @@
 -- Task: For each employee list every block of consecutive working days as start_date, end_date
 --   and days (inclusive; several rows on one day count once). Return employee, start_date,
 --   end_date, days; sort by employee, then start_date.
--- Learn: grinding/sql-analytics-patterns.md, mục 1.6b
+-- Learn: grinding/sql-gaps-islands.md, B4
 
 -- INPUT
 shifts

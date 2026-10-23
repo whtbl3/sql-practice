@@ -5,7 +5,7 @@
 -- Task: Keep every employee row and add dept_avg (department average salary, 1 decimal),
 --   diff_from_avg (salary - dept_avg, 1 decimal) and dept_headcount (employees in the department,
 --   including those with a NULL salary). Sort by department, name.
--- Learn: grinding/sql-subquery-window.md, mục W2
+-- Learn: grinding/sql-window.md, B1
 
 -- INPUT
 employees

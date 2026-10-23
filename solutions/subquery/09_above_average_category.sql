@@ -4,7 +4,7 @@
 --
 -- Task: Return the categories whose total revenue is above the average TOTAL revenue of a category.
 --   Sort by revenue DESC, category.
--- Learn: grinding/sql-subquery-window.md, mục S4
+-- Learn: grinding/sql-subquery.md, B4
 
 -- INPUT
 sales

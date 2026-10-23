@@ -11,7 +11,7 @@
 --     'At risk'      days_inactive <= 90
 --     'Lapsed'          everything else
 --   Return customer_id, full_name, last_order_date, days_inactive, status. Sort by customer_id.
--- Learn: grinding/sql-analytics-patterns.md, mục 8.2
+-- Learn: grinding/sql-churn.md, B1
 
 -- INPUT
 customers

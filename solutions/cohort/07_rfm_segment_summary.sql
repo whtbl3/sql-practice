@@ -11,7 +11,7 @@
 --   For ALL five segments (even with no customers) return segment, customers, revenue (sum of
 --   monetary, 0 if none) and revenue_pct = revenue / total revenue * 100 rounded to 1 decimal.
 --   Sort in the fixed order Champions, Loyal, New, At Risk, Lost.
--- Learn: grinding/sql-analytics-patterns.md, mục 2.7
+-- Learn: grinding/sql-rfm.md, B5
 
 -- INPUT
 customer_rfm

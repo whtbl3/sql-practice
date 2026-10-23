@@ -7,7 +7,7 @@
 --   exactly 2 (a friend of one of user 1's friends, not user 1, not already a friend). Return
 --   user_id, name and mutual_friends (how many of user 1's friends they are friends with).
 --   Sort by mutual_friends DESC, user_id.
--- Learn: grinding/sql-recursive.md, mục 2.1
+-- Learn: grinding/sql-recursive-cte.md, B4
 
 -- INPUT
 users

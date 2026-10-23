@@ -7,7 +7,7 @@
 --   product in purchases return product, remaining_qty and inventory_value_vnd = sum over the
 --   remaining units of their lot's unit_cost_vnd (0 and 0 when everything is sold).
 --   Sort by product.
--- Learn: grinding/sql-analytics-patterns.md, mục 13.2
+-- Learn: grinding/sql-fifo.md, B1–B4
 
 -- INPUT
 purchases

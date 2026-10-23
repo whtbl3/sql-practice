@@ -12,7 +12,7 @@
 --     'Standard'     everything else (including members with no orders)
 --   Return customer_id, full_name, orders_2024, net_spend (0 if none), tier for EVERY member.
 --   Sort by net_spend DESC, customer_id.
--- Learn: grinding/sql-analytics-patterns.md, mục 2.9
+-- Learn: grinding/sql-rfm.md, B1–B2
 
 -- INPUT
 customers

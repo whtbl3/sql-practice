@@ -5,7 +5,7 @@
 -- Task: For each customer return their 2 largest orders (ties: smaller order_id first): name,
 --   order_id, amount. A customer without orders appears once with NULL order_id and amount. Sort by
 --   name, amount DESC, order_id.
--- Learn: grinding/sql-subquery-window.md, mục S7
+-- Learn: grinding/sql-subquery.md, B5
 
 -- INPUT
 customers

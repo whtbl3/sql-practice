@@ -6,7 +6,7 @@
 --   return customers (cohort size), repeaters (customers whose SECOND order was placed at most 30
 --   days after their FIRST order) and repeat_rate_pct = repeaters / customers * 100 rounded to 1
 --   decimal. Break ties between orders on the same date by order_id. Sort by cohort_month.
--- Learn: grinding/sql-analytics-patterns.md, mục 3.5b
+-- Learn: grinding/sql-cohort-retention.md, B3, B5
 
 -- INPUT
 orders
@@ -30,3 +30,28 @@ orders
 
 -- QUERY
 -- write your query here
+WITH first_two_orders AS (
+  SELECT
+    customer_id,
+    order_date,
+    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date, order_id) AS rn
+  FROM orders
+),
+first_and_second AS (
+  SELECT
+    customer_id,
+    MAX(order_date) FILTER (WHERE rn = 1) AS first_date,
+    MAX(order_date) FILTER (WHERE rn = 2) AS second_date
+  FROM first_two_orders
+  GROUP BY customer_id
+)
+SELECT
+  TO_CHAR(DATE_TRUNC('month', first_date)::DATE, 'YYYY-MM') AS cohort_month,
+  COUNT(*) AS customers,
+  COUNT(*) FILTER (WHERE second_date - first_date <= 30) AS repeaters,
+  ROUND(
+    100.0 * COUNT(*) FILTER (WHERE second_date - first_date <= 30) / COUNT(*)
+  , 1) AS repeat_rate_pct
+FROM first_and_second
+GROUP BY 1
+ORDER BY 1

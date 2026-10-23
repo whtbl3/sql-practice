@@ -4,7 +4,7 @@
 --
 -- Task: For every employee return name, depth (0 for someone with no manager) and path, the chain
 --   of names from the top manager down to the employee, joined with ' > '. Sort by emp_id.
--- Learn: grinding/sql-recursive.md, mục 1.4
+-- Learn: grinding/sql-recursive-cte.md, B1–B2
 
 -- INPUT
 employees

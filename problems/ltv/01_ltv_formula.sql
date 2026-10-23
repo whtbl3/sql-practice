@@ -14,7 +14,7 @@
 --   annual_frequency, lifespan_years to 2 decimals. A value whose denominator is 0 is NULL.
 --   Return channel, customers, orders, revenue, aov, annual_frequency, lifespan_years, ltv.
 --   Sort by channel.
--- Learn: grinding/sql-analytics-patterns.md, mục 11.2
+-- Learn: grinding/sql-ltv.md, B3
 
 -- INPUT
 customers

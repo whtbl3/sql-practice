@@ -5,7 +5,7 @@ r"""
 --
 -- Task: Return one row per calendar day from the first to the last sale_date with the day's total
 --   revenue, 0 on days without sales. Sort by sale_date.
--- Learn: grinding/sql-analytics-patterns.md, mục 6
+-- Learn: grinding/sql-kpi-report.md, B3
 
 -- INPUT
 sales

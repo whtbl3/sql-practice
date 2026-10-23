@@ -6,7 +6,7 @@
 --   with fewer than 3 distinct salaries are left out. NULL salaries are ignored. Window functions,
 --   LIMIT and OFFSET are rejected. Sort by department.
 -- @forbid: \bOVER\s*\(|\bLIMIT\b|\bOFFSET\b
--- Learn: grinding/sql-subquery-window.md, mục S6
+-- Learn: grinding/sql-subquery.md, B2
 
 -- INPUT
 employees

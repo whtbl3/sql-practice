@@ -8,7 +8,7 @@
 --   cohort_month ('YYYY-MM'), month_offset, cohort_size and cum_ltv = total revenue of the
 --   cohort's customers from the cohort month up to and including that month, divided by
 --   cohort_size, rounded to whole VND. Sort by cohort_month, month_offset.
--- Learn: grinding/sql-analytics-patterns.md, mục 11.5
+-- Learn: grinding/sql-ltv.md, B4
 
 -- INPUT
 orders

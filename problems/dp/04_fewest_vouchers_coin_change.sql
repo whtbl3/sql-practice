@@ -6,7 +6,7 @@
 --   times. For every payment, find the smallest number of vouchers whose values add up to
 --   EXACTLY amount (0 vouchers for amount 0). Return payment_id, amount and min_vouchers (NULL
 --   when the amount cannot be made). Sort by payment_id.
--- Learn: grinding/sql-recursive.md, mục 3.5
+-- Learn: grinding/sql-dp.md, B4–B5
 
 -- INPUT
 vouchers

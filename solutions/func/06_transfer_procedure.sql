@@ -8,7 +8,7 @@
 --   either account does not exist -> 'account not found';
 --   the balance of p_from is less than p_amount -> 'insufficient funds'.
 --   Check the accounts table after the CALLs.
--- Learn: grinding/sql-functions-procedures.md, mục 5
+-- Learn: grinding/sql-procedure.md, B1–B5
 
 -- INPUT
 accounts

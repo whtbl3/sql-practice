@@ -5,7 +5,7 @@
 -- Task: Return one row: customers (number of customers), avg_orders (average number of orders per
 --   customer, 2 decimals, customers without orders count as 0) and max_orders. Orders whose
 --   customer_id is not in customers are ignored.
--- Learn: grinding/sql-subquery-window.md, mục S4
+-- Learn: grinding/sql-subquery.md, B4
 
 -- INPUT
 customers

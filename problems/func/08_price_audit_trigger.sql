@@ -6,7 +6,7 @@
 --   price_audit, but only when the price actually changes (NULL -> value and value -> NULL count as
 --   changes; an UPDATE that touches only the name or sets the same price does not). Write a trigger
 --   function and the trigger. The CALL runs some UPDATEs; price_audit is checked afterwards.
--- Learn: grinding/sql-functions-procedures.md, mục 6
+-- Learn: grinding/sql-trigger.md, B1–B5
 
 -- INPUT
 products

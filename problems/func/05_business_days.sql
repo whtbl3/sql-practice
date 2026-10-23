@@ -5,7 +5,7 @@
 -- Task: Create business_days(p_from DATE, p_to DATE) RETURNS INT: the number of days from p_from to
 --   p_to (both included) that are Monday-Friday and not in the holidays table. If p_from is after
 --   p_to return 0.
--- Learn: grinding/sql-functions-procedures.md, mục 3.4
+-- Learn: grinding/sql-function.md, B5
 
 -- INPUT
 holidays

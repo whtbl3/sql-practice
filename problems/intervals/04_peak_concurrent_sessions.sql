@@ -8,7 +8,7 @@
 --   max_concurrent (the highest number of viewers watching at the same time), peak_start (the
 --   first moment that number is reached) and peak_end (the first moment after peak_start when
 --   the number drops below max_concurrent). With no sessions return 0, NULL, NULL.
--- Learn: grinding/sql-analytics-patterns.md, mục 12.5
+-- Learn: grinding/sql-intervals.md, B5
 
 -- INPUT
 sessions

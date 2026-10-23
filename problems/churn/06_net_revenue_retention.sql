@@ -14,7 +14,7 @@
 --   ending_mrr (sum of t), nrr_pct = ending_mrr / starting_mrr * 100 and
 --   grr_pct = (starting_mrr - contraction_mrr - churned_mrr) / starting_mrr * 100, both rounded
 --   to 1 decimal (NULL when starting_mrr = 0). Money columns are 0 when there is nothing to add.
--- Learn: grinding/sql-analytics-patterns.md, mục 8.7
+-- Learn: grinding/sql-churn.md, B1, B3, B4
 
 -- INPUT
 subscription_items

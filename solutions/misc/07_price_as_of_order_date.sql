@@ -7,7 +7,7 @@
 --   product. For every order line return order_id, product_id, order_date, unit_price (the price
 --   in effect on order_date; NULL if the product had no price yet) and line_total = unit_price *
 --   qty. Sort by order_id, product_id.
--- Learn: grinding/sql-analytics-patterns.md, mục 12.6
+-- Learn: grinding/sql-intervals.md, B1–B2
 
 -- INPUT
 price_history

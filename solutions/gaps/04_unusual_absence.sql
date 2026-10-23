@@ -9,7 +9,7 @@
 --   date - last purchase day. A customer is late when days_since_last > 2 * median_gap.
 --   Return only late customers: customer_id, median_gap (1 decimal), days_since_last and
 --   ratio = days_since_last / median_gap (1 decimal). Sort by ratio DESC, customer_id.
--- Learn: grinding/sql-analytics-patterns.md, mục 9.5
+-- Learn: grinding/sql-purchase-gaps.md, B3
 
 -- INPUT
 orders

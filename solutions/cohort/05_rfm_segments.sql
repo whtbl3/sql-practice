@@ -11,7 +11,7 @@
 --     'At Risk'   r_score = 1 AND f_score >= 2
 --     'Lost'      everything else
 --   Return customer_id, r_score, f_score, m_score, segment. Sort by customer_id.
--- Learn: grinding/sql-analytics-patterns.md, mục 2.4
+-- Learn: grinding/sql-rfm.md, B4
 
 -- INPUT
 orders

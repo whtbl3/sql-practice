@@ -8,7 +8,7 @@
 --   1 decimal. Departments where every salary is NULL are left out. Equal salaries are separate
 --   values (4 salaries 20, 25, 25, 40 have median 25). PERCENTILE_CONT / PERCENTILE_DISC are
 --   not allowed. Sort by department.
--- Learn: grinding/sql-analytics-patterns.md, mục 10.3
+-- Learn: grinding/sql-median.md, B1–B4
 
 -- INPUT
 employees

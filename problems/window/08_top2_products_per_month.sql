@@ -5,7 +5,7 @@
 -- Task: Total qty per month ('YYYY-MM') and product, ranked within the month by total_qty DESC with
 --   DENSE_RANK. Return only rank 1 and 2: month, product, total_qty, rank_in_month. Sort by month,
 --   rank_in_month, product.
--- Learn: grinding/sql-subquery-window.md, mục W7
+-- Learn: grinding/sql-window.md, B5
 
 -- INPUT
 sales

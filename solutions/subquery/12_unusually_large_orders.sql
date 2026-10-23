@@ -5,7 +5,7 @@
 -- Task: An order is unusual if its amount is MORE than 2 x the average amount of the same customer's
 --   earlier orders. Earlier = smaller order_date, or same order_date and smaller order_id. A first
 --   order is never unusual. Return order_id, customer, amount, prev_avg (1 decimal). Sort by order_id.
--- Learn: grinding/sql-subquery-window.md, mục S2
+-- Learn: grinding/sql-subquery.md, B2
 
 -- INPUT
 orders

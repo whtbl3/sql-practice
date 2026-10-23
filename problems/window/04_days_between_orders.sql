@@ -5,7 +5,7 @@
 -- Task: For every order return customer, order_date, prev_order_date and next_order_date (the same
 --   customer's previous / next order) and days_since_prev (NULL for a first order). Sort by
 --   customer, order_date.
--- Learn: grinding/sql-subquery-window.md, mục W4
+-- Learn: grinding/sql-window.md, B4
 
 -- INPUT
 orders

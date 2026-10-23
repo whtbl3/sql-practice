@@ -8,7 +8,7 @@
 --   cohort size counts ALL users who signed up that month, including users with no events.
 --   month_offset = months between the signup month and the event month; events before the signup
 --   month are ignored. cohort_month is 'YYYY-MM'. Sort by cohort_month, month_offset.
--- Learn: grinding/sql-analytics-patterns.md, mục 3.5a
+-- Learn: grinding/sql-cohort-retention.md, B2, B5
 
 -- INPUT
 users
@@ -41,3 +41,44 @@ events
 
 -- QUERY
 -- write your query here
+WITH cohorts AS (
+  SELECT
+    user_id,
+    DATE_TRUNC('month', signup_date)::DATE AS cohort_month
+  FROM users
+),
+cohort_sizing AS (
+  SELECT
+    cohort_month,
+    COUNT(*) AS cohort_size
+  FROM cohorts
+  GROUP BY cohort_month
+),
+user_active_months AS (
+  SELECT
+    c.user_id,
+    c.cohort_month,
+    DATE_TRUNC('month', e.event_date)::date AS event_month
+  FROM cohorts c 
+    JOIN events e ON c.user_id = e.user_id
+  WHERE DATE_TRUNC('month', event_date)::DATE >= cohort_month
+),
+activity AS (
+  SELECT
+    cohort_month,
+    (EXTRACT(YEAR FROM event_month)::int * 12 + EXTRACT(MONTH FROM event_month)::int)
+  - (EXTRACT(YEAR FROM cohort_month)::int *12 + EXTRACT(MONTH FROM cohort_month)::int) AS month_offset,
+    COUNT(DISTINCT user_id) AS active_users
+  FROM user_active_months
+  GROUP BY cohort_month, month_offset
+)
+SELECT
+  TO_CHAR(a.cohort_month, 'YYYY-MM') AS cohort_month,
+  a.month_offset,
+  a.active_users,
+  ROUND(
+    (100.0 * a.active_users) / cs.cohort_size
+  , 1) AS retention_pct
+FROM activity a
+JOIN cohort_sizing cs ON a.cohort_month = cs.cohort_month
+ORDER BY cohort_month, month_offset

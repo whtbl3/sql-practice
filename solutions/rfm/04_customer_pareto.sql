@@ -10,7 +10,7 @@
 --   top_customers, top_customers_pct = top_customers / total_customers * 100 and
 --   top_revenue_pct = revenue of the top group / total revenue * 100, both rounded to 1
 --   decimal. With no delivered orders return 0, 0, NULL, NULL.
--- Learn: grinding/sql-analytics-patterns.md, mục 2.11
+-- Learn: grinding/sql-rfm.md, B5
 
 -- INPUT
 orders

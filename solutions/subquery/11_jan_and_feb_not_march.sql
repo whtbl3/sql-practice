@@ -4,7 +4,7 @@
 --
 -- Task: Return customers who ordered in January 2024 AND in February 2024 but NOT in March 2024.
 --   Each customer once, sorted by customer.
--- Learn: grinding/sql-subquery-window.md, mục S3
+-- Learn: grinding/sql-subquery.md, B3
 
 -- INPUT
 orders

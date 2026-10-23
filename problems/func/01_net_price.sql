@@ -5,7 +5,7 @@
 -- Task: Create a function net_price(p_price NUMERIC, p_discount_pct INT) RETURNS NUMERIC that returns
 --   the price after the percentage discount, rounded to 2 decimals. A NULL discount means no
 --   discount; a NULL price gives NULL. The -- CALL section below uses your function.
--- Learn: grinding/sql-functions-procedures.md, mục 2
+-- Learn: grinding/sql-function.md, B1–B3
 
 -- INPUT
 products

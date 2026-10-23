@@ -6,7 +6,7 @@
 --   an error containing 'price must be non-negative'. If the sku exists in price_list, set its price
 --   to p_price and add 1 to updated_count; otherwise insert (p_sku, p_price, 0). Check price_list
 --   after the CALLs.
--- Learn: grinding/sql-functions-procedures.md, mục 5.4
+-- Learn: grinding/sql-procedure.md, upsert
 
 -- INPUT
 price_list

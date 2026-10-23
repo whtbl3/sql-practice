@@ -5,7 +5,7 @@
 -- Task: Return txn_id, amount and running_total (sum of amount over all transactions with txn_id <=
 --   this one) WITHOUT window functions (OVER is rejected). Sort by txn_id.
 -- @forbid: \bOVER\s*\(
--- Learn: grinding/sql-subquery-window.md, mục S2
+-- Learn: grinding/sql-subquery.md, B2
 
 -- INPUT
 transactions

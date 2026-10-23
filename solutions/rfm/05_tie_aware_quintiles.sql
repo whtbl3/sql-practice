@@ -8,7 +8,7 @@
 --     r_score = ceiling(5 * k / n), k = number of customers whose recency_days is >= this customer's
 --   (k counts the customer themself). Lower recency is better, so the most recent buyers get 5.
 --   Return customer_id, r_score, f_score, m_score as integers. Sort by customer_id.
--- Learn: grinding/sql-analytics-patterns.md, mục 2.12
+-- Learn: grinding/sql-rfm.md, B3
 
 -- INPUT
 customer_metrics

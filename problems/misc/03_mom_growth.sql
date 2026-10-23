@@ -5,7 +5,7 @@
 -- Task: For each month return revenue, prev_revenue (previous row's revenue) and pct_change =
 --   (revenue - prev_revenue) * 100 / prev_revenue rounded to 1 decimal. pct_change is NULL for the
 --   first month and when prev_revenue is 0. Sort by month.
--- Learn: grinding/sql-analytics-patterns.md, mục 6
+-- Learn: grinding/sql-kpi-report.md, B3, B5
 
 -- INPUT
 monthly_revenue

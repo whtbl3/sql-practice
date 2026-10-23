@@ -6,7 +6,7 @@
 --   RETURNS TABLE (order_id INT, status TEXT, amount INT) returning the orders of that customer,
 --   sorted by order_id. When p_status is NULL (or omitted) return every status, otherwise only that
 --   status.
--- Learn: grinding/sql-functions-procedures.md, mục 4.4
+-- Learn: grinding/sql-function.md, B3
 
 -- INPUT
 orders
