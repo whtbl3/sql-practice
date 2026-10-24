@@ -4,7 +4,7 @@
 --
 -- Task: Return exactly one row with one column second_highest: the second highest DISTINCT salary.
 --   If it does not exist, the row must still be returned with NULL. NULL salaries are ignored.
--- Learn: grinding/sql-subquery.md, B1
+-- Learn: grinding/sql-subquery.md, V1
 
 -- INPUT
 employees

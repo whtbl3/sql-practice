@@ -5,7 +5,7 @@
 -- Task: Return non-'Budget' products whose price is higher than the price of EVERY 'Budget' product.
 --   Ignore NULL prices (on both sides). If there are no Budget products, every non-Budget product
 --   with a price qualifies. Sort by price DESC, name.
--- Learn: grinding/sql-subquery.md, B3
+-- Learn: grinding/sql-subquery.md, V5
 
 -- INPUT
 products
