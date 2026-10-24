@@ -6,7 +6,7 @@
 --   course's level is 0 when it has no prerequisite, otherwise 1 + the highest level among its
 --   prerequisites (so every course comes after all of its prerequisites). The graph has no
 --   cycles. Return course_id, name, level for every course. Sort by level, course_id.
--- Learn: grinding/sql-recursive-cte.md, B4
+-- Learn: grinding/sql-recursive-cte.md, V5
 
 -- INPUT
 courses

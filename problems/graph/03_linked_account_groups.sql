@@ -8,7 +8,7 @@
 --   account without links is a group of 1). For every group return component_id (the smallest
 --   account_id in the group), size and members (the account_ids in increasing order, joined with
 --   ', '). Sort by component_id.
--- Learn: grinding/sql-recursive-cte.md, B4
+-- Learn: grinding/sql-recursive-cte.md, V3
 
 -- INPUT
 accounts
