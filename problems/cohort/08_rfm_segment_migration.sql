@@ -12,7 +12,7 @@
 --     'Lapsed'      everything else
 --   Return customer_id, segment_q1, segment_q2 only for customers whose segment changed.
 --   Sort by customer_id.
--- Learn: grinding/sql-rfm.md, B1, B5
+-- Learn: grinding/sql-rfm.md, V5
 
 -- INPUT
 customers

@@ -7,7 +7,7 @@
 --   pattern (patterns are already anchored with ^...$). Rules overlap: each customer gets the
 --   segment of the matching rule with the LOWEST priority number. A customer that matches no
 --   rule gets 'Unclassified'. Return customer_id, rfm_code, segment. Sort by customer_id.
--- Learn: grinding/sql-rfm.md, B4
+-- Learn: grinding/sql-rfm.md, V4
 
 -- INPUT
 customer_rfm
