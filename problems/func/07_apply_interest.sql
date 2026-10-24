@@ -6,7 +6,7 @@
 --   interest = ROUND(balance * p_rate, 2). If the interest is greater than 0, add it to the balance
 --   and insert (account_id, interest) into interest_log. A NULL or negative p_rate must raise an
 --   error containing 'rate must be non-negative'. The CALL then shows balances with their log rows.
--- Learn: grinding/sql-procedure.md, xử lý nhiều dòng
+-- Learn: grinding/sql-procedure.md, V2
 
 -- INPUT
 accounts
