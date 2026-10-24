@@ -5,7 +5,7 @@
 -- Task: For each user, take every run of 3 consecutive page views (ordered by seq). Return the most
 --   common path as 'a > b > c' with its count. Tie: smallest path alphabetically. Users with fewer
 --   than 3 views contribute nothing.
--- Learn: grinding/sql-funnel.md, đường đi phổ biến nhất
+-- Learn: grinding/sql-funnel.md, V2
 
 -- INPUT
 page_views

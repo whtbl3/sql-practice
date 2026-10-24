@@ -6,7 +6,7 @@
 --   for a step only if they also did every earlier step. Return one row: the number of users
 --   reaching each step, and purchase_rate = purchase * 100 / signup rounded to 1 decimal (NULL if
 --   nobody signed up).
--- Learn: grinding/sql-funnel.md, B1–B3
+-- Learn: grinding/sql-funnel.md, V1
 
 -- INPUT
 events
