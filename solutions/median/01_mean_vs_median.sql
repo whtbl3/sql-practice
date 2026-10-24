@@ -11,7 +11,7 @@
 --     'left-skewed'  avg < 0.8 * median
 --     'balanced'    otherwise
 --   using the unrounded values. Sort by category.
--- Learn: grinding/sql-median.md, phần mở đầu
+-- Learn: grinding/sql-median.md, V1
 
 -- INPUT
 products

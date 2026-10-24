@@ -10,7 +10,7 @@
 --   middle ones when total_orders is even), rounded to 1 decimal. Do not expand the table into
 --   one row per order (generate_series, unnest and recursive CTEs are not allowed).
 --   Sort by store.
--- Learn: grinding/sql-median.md, B2–B3
+-- Learn: grinding/sql-median.md, V2
 
 -- INPUT
 basket_sizes

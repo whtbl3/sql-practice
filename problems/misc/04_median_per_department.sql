@@ -4,7 +4,7 @@
 --
 -- Task: Compute the median salary of each department (average of the two middle values when the
 --   count is even), rounded to 1 decimal. NULL salaries are ignored. Sort by department.
--- Learn: grinding/sql-median.md, B1–B4
+-- Learn: grinding/sql-median.md, B1–B4, V1
 
 -- INPUT
 employees
