@@ -4,7 +4,7 @@
 --
 -- Task: For each product compute total_sold and pct_of_category (percentage of the total of its
 --   category, rounded to 2 decimals). Sort by category, then product_name.
--- Learn: grinding/sql-kpi-report.md, B5
+-- Learn: grinding/sql-kpi-report.md, V2
 
 -- INPUT
 products
