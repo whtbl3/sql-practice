@@ -12,7 +12,7 @@
 --     'churned'      not active this month but active the previous month
 --   and no row at all when the user is inactive in both months. Return month ('YYYY-MM'),
 --   user_id, status. Sort by month, user_id.
--- Learn: grinding/sql-churn.md, B2–B3
+-- Learn: grinding/sql-churn.md, B1–B3
 
 -- INPUT
 activity

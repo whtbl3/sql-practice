@@ -10,7 +10,7 @@
 --     churn_rate_pct = churned / active_start * 100, rounded to 1 decimal (NULL if active_start = 0)
 --   Subscriptions that start and end inside the same month are in neither number. Count
 --   subscriptions, not customers. month is 'YYYY-MM'. Sort by month.
--- Learn: grinding/sql-churn.md, B1, B4
+-- Learn: grinding/sql-churn.md, V2
 
 -- INPUT
 subscriptions

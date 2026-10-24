@@ -9,7 +9,7 @@
 --   2024-06 is ignored. For EVERY report month return month ('YYYY-MM'), mau (active users),
 --   new_users, retained, resurrected, churned and quick_ratio = (new_users + resurrected) /
 --   churned rounded to 2 decimals (NULL when churned = 0). Sort by month.
--- Learn: grinding/sql-churn.md, B2, B4
+-- Learn: grinding/sql-churn.md, B1–B4, V4
 
 -- INPUT
 activity

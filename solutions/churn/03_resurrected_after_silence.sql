@@ -8,7 +8,7 @@
 --   customer_id, last_active_month (the previous active month), returned_month and
 --   silent_months (number of inactive months in between). Months are 'YYYY-MM'.
 --   Sort by customer_id, returned_month.
--- Learn: grinding/sql-churn.md, B3
+-- Learn: grinding/sql-churn.md, V3
 
 -- INPUT
 orders
