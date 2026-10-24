@@ -7,7 +7,7 @@
 --   touches, return contract_id, year, days (contract days inside that year) and
 --   allocated_vnd = value_vnd * days / total contract days, rounded to whole VND.
 --   Sort by contract_id, year.
--- Learn: grinding/sql-intervals.md, B3
+-- Learn: grinding/sql-intervals.md, V2
 
 -- INPUT
 contracts

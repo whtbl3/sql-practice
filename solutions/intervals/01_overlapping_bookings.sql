@@ -7,7 +7,7 @@
 --   check_out day does NOT overlap it. For every overlapping pair in the same room return room,
 --   booking_a (smaller id), booking_b (larger id), overlap_start, overlap_end (the later
 --   check_in and the earlier check_out) and overlap_nights. Sort by room, booking_a, booking_b.
--- Learn: grinding/sql-intervals.md, B2
+-- Learn: grinding/sql-intervals.md, B1–B3
 
 -- INPUT
 bookings

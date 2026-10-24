@@ -7,7 +7,7 @@
 --   day after another one's end continues the same outage). For every merged outage return
 --   server, outage_start, outage_end, days (end - start + 1) and incidents (number of logged
 --   incidents merged into it). Sort by server, outage_start.
--- Learn: grinding/sql-intervals.md, B4
+-- Learn: grinding/sql-intervals.md, V3
 
 -- INPUT
 incidents
