@@ -5,7 +5,7 @@
 -- Task: Invoice numbers should be continuous. Return every range of missing numbers strictly
 --   between the smallest and the largest invoice_no as gap_start and gap_end (both inclusive).
 --   Sort by gap_start.
--- Learn: grinding/sql-gaps-islands.md, B5
+-- Learn: grinding/sql-gaps-islands.md, V3
 
 -- INPUT
 invoices
