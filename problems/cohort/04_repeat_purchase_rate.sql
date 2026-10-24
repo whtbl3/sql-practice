@@ -6,7 +6,7 @@
 --   return customers (cohort size), repeaters (customers whose SECOND order was placed at most 30
 --   days after their FIRST order) and repeat_rate_pct = repeaters / customers * 100 rounded to 1
 --   decimal. Break ties between orders on the same date by order_id. Sort by cohort_month.
--- Learn: grinding/sql-cohort-retention.md, B3, B5
+-- Learn: grinding/sql-cohort-retention.md, V2
 
 -- INPUT
 orders
