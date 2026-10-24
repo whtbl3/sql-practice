@@ -5,7 +5,7 @@
 -- Task: For every date that has orders, return new_customers (customers whose FIRST order is on
 --   that date) and cumulative_customers (distinct customers seen up to and including that date).
 --   Sort by order_date.
--- Learn: grinding/sql-window.md, B4
+-- Learn: grinding/sql-window.md, V4
 
 -- INPUT
 orders

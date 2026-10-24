@@ -5,7 +5,7 @@
 -- Task: The table has one row per day WITH sales (days without sales are missing). For each row
 --   return rolling_7d = total revenue from sale_date - 6 days to sale_date (a 7-calendar-day
 --   window). Sort by sale_date.
--- Learn: grinding/sql-window.md, B3
+-- Learn: grinding/sql-window.md, V2
 
 -- INPUT
 daily_sales

@@ -5,7 +5,7 @@
 -- Task: A month sets a record if its revenue is higher than every earlier month (the first month
 --   always counts). Return month, revenue and previous_best (highest revenue of all earlier months,
 --   NULL for the first) for record months only. Sort by month.
--- Learn: grinding/sql-window.md, B3
+-- Learn: grinding/sql-window.md, V5
 
 -- INPUT
 monthly_revenue

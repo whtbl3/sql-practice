@@ -6,7 +6,7 @@
 --   only the snapshots where the price differs from that product's previous snapshot (NULL counts as
 --   a value), plus each product's first snapshot. Return product, changed_on, old_price (previous
 --   snapshot's price), new_price. Sort by product, changed_on.
--- Learn: grinding/sql-window.md, B4
+-- Learn: grinding/sql-window.md, V3
 
 -- INPUT
 price_history

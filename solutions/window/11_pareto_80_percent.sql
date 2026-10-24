@@ -6,7 +6,7 @@
 --   including the product, as % of total revenue (1 decimal). Return the products needed to reach
 --   80%: every product whose cumulative share BEFORE adding it is below 80. Sort by revenue DESC,
 --   product.
--- Learn: grinding/sql-window.md, B3
+-- Learn: grinding/sql-window.md, V5
 
 -- INPUT
 product_sales

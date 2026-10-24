@@ -5,7 +5,7 @@
 -- Task: For every employee return name, department, salary, top_earner (name of the highest-paid
 --   employee in the department) and lowest_earner (name of the lowest-paid). For ties, pick the
 --   alphabetically first name. Sort by department, name.
--- Learn: grinding/sql-window.md, B3–B4
+-- Learn: grinding/sql-window.md, V1
 
 -- INPUT
 employees
