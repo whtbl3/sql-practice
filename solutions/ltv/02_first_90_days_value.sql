@@ -9,7 +9,7 @@
 --   month (month of first_date, 'YYYY-MM') with at least one mature customer return
 --   acquisition_month, customers (mature ones) and avg_value_90d = average over those customers
 --   of their total amount_vnd inside the window, rounded to whole VND. Sort by acquisition_month.
--- Learn: grinding/sql-ltv.md, B2
+-- Learn: grinding/sql-ltv.md, V1
 
 -- INPUT
 orders

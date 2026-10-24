@@ -9,7 +9,7 @@
 --     share_of_totals_pct    = sum of first-month revenue / sum of lifetime revenue * 100
 --     avg_customer_share_pct = average over customers of (first-month / lifetime) * 100
 --   both rounded to 1 decimal. Sort by cohort_month.
--- Learn: grinding/sql-ltv.md, B2–B3
+-- Learn: grinding/sql-ltv.md, B1–B3
 
 -- INPUT
 orders
