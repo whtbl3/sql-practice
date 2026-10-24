@@ -1,9 +1,5 @@
 # Trigger
 
-<style>
-.markdown-preview tr:has(.drop) td { background: rgba(191, 97, 106, 0.16) !important; }
-</style>
-
 > Bài liên quan: `func/08`. Output và thông báo lỗi đều chạy thật bằng `check.py`.
 
 ## Bài toán

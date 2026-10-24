@@ -1,9 +1,5 @@
 # Báo cáo chỉ số (KPI, dashboard)
 
-<style>
-.markdown-preview tr:has(.drop) td { background: rgba(191, 97, 106, 0.16) !important; }
-</style>
-
 > Bài liên quan: `misc/01`, `02`, `03`, `05`. Output đều chạy thật bằng `check.py`.
 
 ## Bài toán

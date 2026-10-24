@@ -1,9 +1,5 @@
 # Chuỗi trạng thái (state machine)
 
-<style>
-.markdown-preview tr:has(.drop) td { background: rgba(191, 97, 106, 0.16) !important; }
-</style>
-
 > Bài liên quan: `misc/08`. Output đều chạy thật bằng `check.py`.
 
 ## Bài toán

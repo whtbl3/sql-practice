@@ -11,11 +11,11 @@
 students
 | student_id:int | name:text | score:int |
 |----------------|-----------|-----------|
-| 1              | An        | 95        |
-| 2              | Binh      | 80        |
-| 3              | Chi       | 64        |
-| 4              | Dung      | NULL      |
-| 5              | Em        | 65        |
+| 1              | Anna      | 95        |
+| 2              | Ben       | 80        |
+| 3              | Carl      | 64        |
+| 4              | Dave      | NULL      |
+| 5              | Emma      | 65        |
 
 -- EXPECTED
 | student_id | grade |

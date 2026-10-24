@@ -1,9 +1,5 @@
 # Quy hoạch động (DP) trong SQL
 
-<style>
-.markdown-preview tr:has(.drop) td { background: rgba(191, 97, 106, 0.16) !important; }
-</style>
-
 > Bài liên quan: `dp/01`–`05`. Output và thông báo lỗi đều chạy thật bằng `check.py`.
 
 ## Bài toán

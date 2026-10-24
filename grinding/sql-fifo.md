@@ -1,9 +1,5 @@
 # FIFO (nhập trước, xuất trước)
 
-<style>
-.markdown-preview tr:has(.drop) td { background: rgba(191, 97, 106, 0.16) !important; }
-</style>
-
 > Bài liên quan: `fifo/01`–`03`. Output đều chạy thật bằng `check.py`.
 
 ## Bài toán

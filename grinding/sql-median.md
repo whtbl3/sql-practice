@@ -1,9 +1,5 @@
 # Trung vị và phân vị
 
-<style>
-.markdown-preview tr:has(.drop) td { background: rgba(191, 97, 106, 0.16) !important; }
-</style>
-
 > Bài liên quan: `median/01`–`04`, `misc/04`. Output đều chạy thật bằng `check.py`.
 
 ## Bài toán

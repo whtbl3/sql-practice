@@ -1,9 +1,5 @@
 # Churn, growth accounting và NRR
 
-<style>
-.markdown-preview tr:has(.drop) td { background: rgba(191, 97, 106, 0.16) !important; }
-</style>
-
 > Bài liên quan: `churn/01`–`06`. Output đều chạy thật bằng `check.py`.
 
 ## Bài toán
