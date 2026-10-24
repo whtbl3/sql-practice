@@ -11,7 +11,7 @@
 --   Return bucket, gaps (number of gaps in it) and pct_of_gaps = gaps / all gaps * 100 rounded
 --   to 1 decimal (NULL when there are no gaps at all). List all four buckets, even empty ones,
 --   in the order above.
--- Learn: grinding/sql-purchase-gaps.md, B4
+-- Learn: grinding/sql-purchase-gaps.md, V2
 
 -- INPUT
 orders

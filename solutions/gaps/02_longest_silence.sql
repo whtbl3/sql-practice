@@ -8,7 +8,7 @@
 --   counted order return their longest silence: customer_id, gap_start (purchase day where it
 --   starts), gap_end (next purchase day, or the as-of date for the open gap), gap_days and
 --   gap_type ('closed' or 'open'). On a tie keep the earliest gap. Sort by customer_id.
--- Learn: grinding/sql-purchase-gaps.md, B2
+-- Learn: grinding/sql-purchase-gaps.md, V1
 
 -- INPUT
 orders

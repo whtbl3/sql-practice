@@ -10,7 +10,7 @@
 --   buyers * 100, avg_days and median_days of days_to_return (median = average of the two
 --   middle values when the count is even). Round the three to 1 decimal; they are NULL when
 --   the denominator is empty. Sort by channel.
--- Learn: grinding/sql-purchase-gaps.md, B2, B4
+-- Learn: grinding/sql-purchase-gaps.md, V4
 
 -- INPUT
 customers
