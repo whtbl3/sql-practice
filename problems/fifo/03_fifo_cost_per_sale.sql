@@ -7,7 +7,7 @@
 --   For every sale return sale_id, product, qty, cogs_vnd (sum of the unit costs of the units it
 --   took), revenue_vnd = qty * unit_price_vnd and gross_profit_vnd = revenue - cogs.
 --   Sort by sale_id.
--- Learn: grinding/sql-fifo.md, giá vốn từng lần bán
+-- Learn: grinding/sql-fifo.md, V2
 
 -- INPUT
 purchases

@@ -7,7 +7,7 @@
 --   and is ignored here. For every invoice return invoice_id, customer, amount_vnd, paid_vnd,
 --   outstanding_vnd and status: 'Paid' (nothing outstanding), 'Unpaid'
 --   (nothing paid) or 'Partial'. Sort by customer, invoice_date, invoice_id.
--- Learn: grinding/sql-fifo.md, B3
+-- Learn: grinding/sql-fifo.md, V1
 
 -- INPUT
 invoices
