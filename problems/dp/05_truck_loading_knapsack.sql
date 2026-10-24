@@ -6,7 +6,7 @@
 --   at most once. Choose items with total weight_kg <= 10 that maximise the total value. Return
 --   ONE row: best_value, total_weight and items (the chosen names in item_id order, joined with
 --   ', '). On a tie prefer the lighter load, then the set whose item_id list comes first.
--- Learn: grinding/sql-dp.md, B4
+-- Learn: grinding/sql-dp.md, V4
 
 -- INPUT
 items

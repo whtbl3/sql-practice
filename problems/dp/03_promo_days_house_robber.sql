@@ -6,7 +6,7 @@
 --   each day of a week. To avoid tiring customers, flash sales may not run on two consecutive
 --   rows (days in day order). Choose the days to maximise the total extra revenue. Return ONE
 --   row: max_extra_revenue (0 when there are no days).
--- Learn: grinding/sql-dp.md, B1–B5
+-- Learn: grinding/sql-dp.md, B1–B4
 
 -- INPUT
 promo_days

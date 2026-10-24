@@ -7,7 +7,7 @@
 --   left (including itself) and the highest point on its right (including itself). For every
 --   position return pos, height, left_max, right_max and water = that level - height.
 --   Sort by pos.
--- Learn: grinding/sql-dp.md, B2
+-- Learn: grinding/sql-dp.md, V1
 
 -- INPUT
 terrain
