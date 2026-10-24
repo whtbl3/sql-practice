@@ -6,7 +6,7 @@
 --   keyword is rejected). If several employees tie for the top salary, return all of them. Ignore
 --   employees whose salary is NULL. Return department, name, salary; sort by department, then
 --   name.
--- Learn: grinding/sql-top-n.md, không được dùng window
+-- Learn: grinding/sql-top-n.md, V3
 -- @forbid: \bOVER\s*\(
 
 -- INPUT

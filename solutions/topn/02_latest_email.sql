@@ -4,7 +4,7 @@
 --
 -- Task: The table keeps the history of email changes. For each customer return the email from the
 --   LATEST update. Return customer_id, email; sort by customer_id.
--- Learn: grinding/sql-top-n.md, B1–B3
+-- Learn: grinding/sql-top-n.md, V2
 
 -- INPUT
 customer_updates
