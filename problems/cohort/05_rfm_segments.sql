@@ -42,3 +42,50 @@ orders
 
 -- QUERY
 -- write your query here
+WITH as_of AS (
+  SELECT
+    MAX(order_date) + 1 AS as_of_date
+  FROM orders
+  WHERE status = 'Completed'
+),
+rfm AS (
+  SELECT
+    o.customer_id,
+    a.as_of_date - MAX(o.order_date) AS recency,
+    COUNT(*) AS frequency,
+    SUM(o.total_amount) AS monetary
+  FROM orders o CROSS JOIN as_of a
+  WHERE o.status = 'Completed'
+  GROUP BY o.customer_id, a.as_of_date
+),
+scored AS (
+  SELECT
+    customer_id,
+    NTILE(3) OVER (ORDER BY recency DESC, customer_id ASC) AS r_score,
+    NTILE(3) OVER (ORDER BY frequency, customer_id ASC) AS f_score,
+    NTILE(3) OVER (ORDER BY monetary, customer_id ASC) AS m_score
+  FROM rfm
+),
+labeled AS (
+  SELECT
+    customer_id,
+    r_score,
+    f_score,
+    m_score,
+    CASE
+      WHEN r_score = 3 AND f_score = 3 THEN 'Champions'
+      WHEN r_score >= 2 AND f_score >= 2 THEN 'Loyal'
+      WHEN r_score = 3 AND f_score = 1 THEN 'New'
+      WHEN r_score = 1 AND f_score >= 2 THEN 'At Risk'
+      ELSE 'Lost'
+    END AS segment
+  FROM scored
+)
+SELECT
+  customer_id,
+  r_score,
+  f_score,
+  m_score,
+  segment
+FROM labeled
+ORDER BY customer_id
