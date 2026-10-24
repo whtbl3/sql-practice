@@ -5,7 +5,7 @@
 -- Task: Create grade_of(p_score INT) RETURNS TEXT: 90 or more -> 'A', 80 or more -> 'B', 65 or more
 --   -> 'C', otherwise 'F'. A NULL score -> 'N/A'. A score below 0 or above 100 must raise an error
 --   whose message is 'invalid score: <score>' (e.g. invalid score: 101).
--- Learn: grinding/sql-function.md, B3
+-- Learn: grinding/sql-function.md, V1
 
 -- INPUT
 students

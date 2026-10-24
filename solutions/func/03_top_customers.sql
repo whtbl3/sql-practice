@@ -5,7 +5,7 @@
 -- Task: Create top_customers(p_n INT) RETURNS TABLE (customer_id INT, total_spent NUMERIC) returning
 --   the p_n customers with the highest total amount of 'paid' orders, highest first, ties broken by
 --   customer_id ascending. Customers without paid orders are not returned.
--- Learn: grinding/sql-function.md, B4
+-- Learn: grinding/sql-function.md, V2
 
 -- INPUT
 orders

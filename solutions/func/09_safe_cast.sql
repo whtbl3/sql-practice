@@ -4,7 +4,7 @@
 --
 -- Task: Create to_int_or_null(p_text TEXT) RETURNS INT that returns p_text converted to an integer,
 --   or NULL when it is NULL, not a valid integer (e.g. 'abc', '3.5'), or outside the INT range.
--- Learn: grinding/sql-function.md, B3
+-- Learn: grinding/sql-function.md, V5
 
 -- INPUT
 raw_imports
