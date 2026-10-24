@@ -5,7 +5,7 @@
 -- Task: For every product (including never-ordered ones) return name, units_sold (total qty, 0 if
 --   none) and pct_of_units = units_sold as % of all units sold, 1 decimal (NULL if nothing was
 --   sold at all). Sort by units_sold DESC, name.
--- Learn: grinding/sql-subquery.md, B2
+-- Learn: grinding/sql-subquery.md, D2
 
 -- INPUT
 products

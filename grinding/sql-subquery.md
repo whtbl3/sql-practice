@@ -10,7 +10,7 @@ Những câu hỏi này không viết thẳng được trong một tầng `SELEC
 - `WHERE amount > AVG(amount)` báo lỗi `aggregate functions are not allowed in WHERE`, vì `WHERE` chạy **trước** khi gộp, nên lúc đó chưa có `AVG`.
 - `AVG(COUNT(*))` báo lỗi `aggregate function calls cannot be nested`: không lồng hàm gộp vào hàm gộp được.
 
-Cả hai đều cần tính một thứ **trước**, rồi mới dùng kết quả đó. Truy vấn con (subquery) làm việc này. Có năm kiểu truy vấn con, mỗi kiểu trả lời một dạng câu hỏi. Phần 1 đi qua cả năm kiểu trên cùng một bộ dữ liệu.
+Cả hai đều cần tính một thứ **trước**, rồi mới dùng kết quả đó. Truy vấn con (subquery) làm việc này. Có năm dạng truy vấn con, mỗi dạng trả lời một kiểu câu hỏi. Phần 1 trình bày cả năm dạng trên cùng một bộ dữ liệu.
 
 ## Dữ liệu
 
@@ -39,23 +39,25 @@ Hai bảng, quan hệ **1 khách – nhiều đơn**.
 
 Ba chỗ dễ sai: hai khách **cùng tên**, Chloe **chưa mua gì**, và đơn 6 **không gắn với khách nào**.
 
-## Lộ trình
+## Năm dạng subquery
 
-| Bước | Dạng câu hỏi | Kiểu truy vấn con | Đặt ở đâu |
+Mỗi dạng độc lập với nhau: gặp câu hỏi kiểu nào thì dùng dạng đó, không cần đi lần lượt.
+
+| Dạng | Câu hỏi | Kiểu truy vấn con | Đặt ở đâu |
 | --- | --- | --- | --- |
-| B1 | So với **một giá trị** của cả bảng | vô hướng (scalar) | `WHERE`, `SELECT` |
-| B2 | So với **một giá trị riêng** cho từng dòng | tương quan (correlated) | `WHERE`, `SELECT` |
-| B3 | **Có hay không có** dòng khớp | `EXISTS` / `NOT EXISTS` | `WHERE` |
-| B4 | Gộp của gộp | bảng dẫn xuất (derived table) | `FROM` |
-| B5 | Mỗi dòng ngoài lấy N dòng bên trong | `LATERAL` | `FROM` / `JOIN` |
+| D1 | So với **một giá trị** của cả bảng | vô hướng (scalar) | `WHERE`, `SELECT` |
+| D2 | So với **một giá trị riêng** cho từng dòng | tương quan (correlated) | `WHERE`, `SELECT` |
+| D3 | **Có hay không có** dòng khớp | `EXISTS` / `NOT EXISTS` | `WHERE` |
+| D4 | Gộp của gộp | bảng dẫn xuất (derived table) | `FROM` |
+| D5 | Mỗi dòng ngoài lấy N dòng bên trong | `LATERAL` | `FROM` / `JOIN` |
 
-Ví dụ trong từng bước chỉ hiện vài dòng để minh họa; `...` là các dòng còn lại.
+Ví dụ trong từng dạng chỉ hiện vài dòng để minh họa; `...` là các dòng còn lại.
 
 ---
 
-# Phần 1: Mạch chính
+# Phần 1: Năm dạng subquery
 
-## B1. So với một giá trị của cả bảng (truy vấn con vô hướng)
+## D1. So với một giá trị của cả bảng (truy vấn con vô hướng)
 
 **Ý tưởng:** đề hỏi các đơn lớn hơn **trung bình của mọi đơn**. Tính trung bình bằng một truy vấn con, rồi dùng kết quả như một hằng số. Truy vấn con trả về **đúng một dòng, một cột** gọi là truy vấn con vô hướng. Nó không nhắc tới bảng bên ngoài, nên chỉ cần tính một lần.
 
@@ -88,7 +90,7 @@ Kết quả: đơn 1, 2, 5. Nếu truy vấn con không trả về dòng nào, g
 >
 > → **Sửa:** gộp về một giá trị (`MAX`, `AVG`...), hoặc dùng `> ALL (...)` / `> ANY (...)` (xem V5).
 
-## B2. So với một giá trị riêng cho từng dòng (truy vấn con tương quan)
+## D2. So với một giá trị riêng cho từng dòng (truy vấn con tương quan)
 
 **Ý tưởng:** đề hỏi các đơn lớn hơn **trung bình của chính khách đó**. Mỗi đơn cần một trung bình khác nhau. Truy vấn con nhắc tới dòng của truy vấn ngoài (`x.customer_id = o.customer_id`), nên về mặt logic nó chạy lại cho từng đơn, với khách của đơn đó. Kiểu này gọi là truy vấn con **tương quan**.
 
@@ -132,7 +134,7 @@ FROM customers c;
 >
 > → **Sửa:** `COALESCE((SELECT SUM(...) ...), 0)`.
 
-## B3. Có hay không có dòng khớp (`EXISTS` / `NOT EXISTS`)
+## D3. Có hay không có dòng khớp (`EXISTS` / `NOT EXISTS`)
 
 **Ý tưởng:** đề hỏi **những khách từng mua đồ điện tử**, mỗi khách một dòng. `EXISTS (truy vấn con)` chỉ hỏi "có ít nhất một dòng khớp hay không", và ra `true` / `false`. Nó không nhân dòng của truy vấn ngoài, dù khớp bao nhiêu dòng.
 
@@ -170,7 +172,7 @@ Kết quả: Alice (1), Alice (4), Ben. `SELECT 1` bên trong chỉ là quy ư�
 >
 > → **Sửa:** `WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id)`, ra đúng Chloe.
 
-## B4. Gộp của gộp (bảng dẫn xuất)
+## D4. Gộp của gộp (bảng dẫn xuất)
 
 **Ý tưởng:** đề hỏi **trung bình mỗi khách có bao nhiêu đơn**. Cần gộp hai lần: đếm đơn của mỗi khách, rồi lấy trung bình các con số đó. Viết thành hai tầng: tầng trong là một truy vấn con đặt trong `FROM` (gọi là bảng dẫn xuất), gộp theo khách; tầng ngoài gộp tiếp kết quả của tầng trong. Bảng dẫn xuất bắt buộc phải có tên (alias).
 
@@ -206,7 +208,7 @@ FROM (
 >
 > → **Sửa:** tầng trong đi từ `customers LEFT JOIN orders`, và đếm bằng `COUNT(o.order_id)`. `COUNT(*)` sẽ đếm dòng `NULL` của Chloe thành 1.
 
-## B5. Mỗi dòng ngoài lấy N dòng bên trong (`LATERAL`)
+## D5. Mỗi dòng ngoài lấy N dòng bên trong (`LATERAL`)
 
 **Ý tưởng:** đề hỏi **2 đơn lớn nhất của mỗi khách**. Ta cần một truy vấn con có `ORDER BY ... LIMIT 2` chạy **riêng cho từng khách**. Truy vấn con trong `FROM` bình thường không được nhắc tới bảng đứng trước nó. Thêm chữ `LATERAL` thì nó được dùng cột của dòng bên trái, và chạy lại cho từng dòng.
 
@@ -256,7 +258,7 @@ ORDER BY c.customer_id, t.amount DESC;
 
 # Phần 2: Biến thể
 
-Mỗi biến thể dưới đây là một dạng bài hay gặp, dùng một trong năm kiểu truy vấn con ở Phần 1 theo cách dễ sai. Mỗi mục kể một tình huống, thử cách làm quen thuộc trên dữ liệu ví dụ để xem nó sai ở đâu, rồi sửa.
+Mỗi biến thể dưới đây là một bài hay gặp, dùng một trong năm dạng truy vấn con ở Phần 1 theo cách dễ sai. Mỗi mục kể một tình huống, thử cách làm quen thuộc trên dữ liệu ví dụ để xem nó sai ở đâu, rồi sửa.
 
 Các biến thể V1, V2 dùng bảng nhân viên:
 
@@ -319,7 +321,7 @@ Ben và Chloe cùng 300 không gây vấn đề: điều kiện `salary < 300` b
 
 Đề: với mỗi phòng, trả về **mức lương cao thứ ba** (khác nhau). Phòng có ít hơn 3 mức thì bỏ. Đề cấm hàm cửa sổ, `LIMIT` và `OFFSET`.
 
-**Ý tưởng:** lương L là mức cao thứ ba khi có **đúng 2 mức lương khác nhau** lớn hơn L trong cùng phòng. Đếm số mức lớn hơn bằng một truy vấn con tương quan (B2).
+**Ý tưởng:** lương L là mức cao thứ ba khi có **đúng 2 mức lương khác nhau** lớn hơn L trong cùng phòng. Đếm số mức lớn hơn bằng một truy vấn con tương quan (D2).
 
 ### Thử cách tự nhiên nhất
 
@@ -361,7 +363,7 @@ Legal chỉ có một mức nên không có dòng nào. `DISTINCT` ở tầng ng
 
 ## V3. Khi so với các dòng trước mà không dùng hàm cửa sổ
 
-Điều kiện tương quan ở B2 không nhất thiết là `=`. Dùng `<` hay `<=`, ta có "mọi dòng từ đầu tới dòng này", tức là tổng cộng dồn hay lịch sử, không cần hàm cửa sổ.
+Điều kiện tương quan ở D2 không nhất thiết là `=`. Dùng `<` hay `<=`, ta có "mọi dòng từ đầu tới dòng này", tức là tổng cộng dồn hay lịch sử, không cần hàm cửa sổ.
 
 ### Tổng cộng dồn
 
@@ -571,7 +573,7 @@ Kết quả ra Coffee, Tea, **Juice**. `AVG(amount)` là trung bình của **5 d
 
 ### Cách sửa: tính tổng mỗi nhóm trước, rồi mới lấy trung bình
 
-Đây là "gộp của gộp" (B4): một bảng dẫn xuất tính tổng mỗi nhóm, rồi lấy `AVG` của các tổng đó:
+Đây là "gộp của gộp" (D4): một bảng dẫn xuất tính tổng mỗi nhóm, rồi lấy `AVG` của các tổng đó:
 
 ```sql
 SELECT category, SUM(amount) AS revenue

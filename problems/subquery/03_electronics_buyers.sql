@@ -5,7 +5,7 @@
 -- Task: Return the name of every customer who ordered at least one product in category
 --   'Electronics'. Each customer appears once, but two different customers with the same name are
 --   two rows. Sort by name, then customer_id.
--- Learn: grinding/sql-subquery.md, B3
+-- Learn: grinding/sql-subquery.md, D3
 
 -- INPUT
 customers
