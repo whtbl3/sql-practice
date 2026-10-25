@@ -49,3 +49,49 @@ orders
 
 -- QUERY
 -- write your query here
+WITH rfm AS (
+  SELECT
+    c.customer_id,
+    DATE '2024-07-01' - MAX(o.order_date) AS recency_days,
+    COUNT(o.customer_id) AS frequency,
+    COALESCE(SUM(o.total_amount), 0) AS monetary
+  FROM customers c LEFT JOIN orders o ON c.customer_id = o.customer_id
+  AND o.order_date < '2024-07-01'
+  AND o.status = 'Completed'
+  GROUP BY c.customer_id
+),
+labled AS (
+  SELECT
+    customer_id,
+    recency_days,
+    frequency,
+    monetary,
+    CASE 
+      WHEN recency_days <= 30 THEN 3
+      WHEN recency_days <= 90 THEN 2
+      ELSE 1
+    END AS r_score,
+    CASE
+      WHEN frequency >= 3 THEN 3
+      WHEN frequency >= 2 THEN 2
+      ELSE 1
+    END AS f_score,
+    CASE
+      WHEN monetary >= 1000 THEN 3
+      WHEN monetary >= 300 THEN 2
+      ELSE 1
+    END AS m_score
+  FROM rfm
+  ORDER BY 1
+)
+SELECT 
+  customer_id,
+  recency_days,
+  frequency,
+  monetary,
+  r_score,
+  f_score,
+  m_score,
+  CONCAT(r_score, f_score, m_score) AS rfm_code
+FROM labled
+ORDER BY customer_id;
