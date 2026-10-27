@@ -302,8 +302,8 @@ Hợp đồng là khoảng đóng, nên số ngày là `end − start + 1`. Hợ
 
 | contract_id | year | days | total | allocated_k |
 | --- | --- | --- | --- | --- |
-| 3 | 2024 | <span class="drop">0</span> | <span class="drop">2</span> | <span class="drop">0</span> |
-| 3 | 2025 | <span class="drop">1</span> | <span class="drop">2</span> | <span class="drop">450</span> |
+| 3 | 2024 | <span class="bad">0</span> | <span class="bad">2</span> | <span class="bad">0</span> |
+| 3 | 2025 | <span class="bad">1</span> | <span class="bad">2</span> | <span class="bad">450</span> |
 
 Năm 2024 được 0 dù hợp đồng có chạy ngày 31/12, và tổng chỉ còn 450 thay vì 900.
 
@@ -344,8 +344,8 @@ Một sự cố mở đợt mới khi nó bắt đầu sau khi sự cố **ngay 
 | --- | --- | --- | --- | --- |
 | 1 | 03-01 | 03-20 | NULL | 1 |
 | 2 | 03-02 | 03-04 | 03-20 | 0 |
-| 3 | 03-10 | 03-12 | **03-04** | <span class="drop">1</span> |
-| 4 | 03-21 | 03-22 | 03-12 | <span class="drop">1</span> |
+| 3 | 03-10 | 03-12 | **03-04** | <span class="bad">1</span> |
+| 4 | 03-21 | 03-22 | 03-12 | <span class="bad">1</span> |
 | ... | | | | |
 
 Sự cố 3 bị tách thành đợt mới, vì nó bắt đầu sau ngày kết thúc của sự cố 2 (03-04). Nhưng sự cố 3 vẫn nằm trong sự cố 1, vốn còn kéo dài tới 03-20. `LAG` chỉ nhìn được dòng ngay trước, mà dòng đó lại là một sự cố ngắn nằm bên trong sự cố dài. Kết quả: api-01 bị chia thành 4 đợt thay vì 2.
@@ -449,7 +449,7 @@ FROM per_ts;
 | ts | delta | viewers |
 | --- | --- | --- |
 | 20:20 | 1 | 3 |
-| 20:30 | +1 (Chloe) | <span class="drop">4</span> |
+| 20:30 | +1 (Chloe) | <span class="bad">4</span> |
 | 20:30 | −1 (Ben) | 3 |
 
 Ben và Chloe không bao giờ cùng xem: lúc Chloe vào là lúc Ben đã ra. Phải `GROUP BY ts` và cộng `delta` của cùng thời điểm **trước** khi cộng dồn. Lúc 20:30, +1 và −1 triệt tiêu thành 0.

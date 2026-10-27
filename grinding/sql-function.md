@@ -98,7 +98,7 @@ PostgreSQL có từ khóa `STRICT`: nếu **bất kỳ** tham số nào là `NUL
 
 | purchase_id | amount | tier | without `STRICT` | with `STRICT` |
 | --- | --- | --- | --- | --- |
-| 3 | 120 | NULL | 12 | <span class="drop">NULL</span> |
+| 3 | 120 | NULL | 12 | <span class="bad">NULL</span> |
 | 4 | NULL | gold | NULL | NULL |
 | ... | | | | |
 

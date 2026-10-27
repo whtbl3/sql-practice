@@ -272,9 +272,9 @@ LAST_VALUE(name)  OVER (PARTITION BY department ORDER BY salary DESC, name) AS l
 
 | name | salary | top_earner | lowest_earner |
 | --- | --- | --- | --- |
-| Alice | 90 | Alice | <span class="drop">Alice</span> |
-| Chloe | 90 | Alice | <span class="drop">Chloe</span> |
-| Ben | 70 | Alice | <span class="drop">Ben</span> |
+| Alice | 90 | Alice | <span class="bad">Alice</span> |
+| Chloe | 90 | Alice | <span class="bad">Chloe</span> |
+| Ben | 70 | Alice | <span class="bad">Ben</span> |
 | David | 60 | Alice | David |
 
 `top_earner` đúng, nhưng `lowest_earner` luôn là **chính người đang xét**. Lý do nằm ở khung mặc định (B3): khi có `ORDER BY`, khung chỉ chạy **từ đầu nhóm tới dòng hiện tại**. Với Alice, khung chỉ có mỗi Alice, nên "người cuối" là Alice. `FIRST_VALUE` không bị ảnh hưởng, vì đầu khung luôn là đầu nhóm.
@@ -346,9 +346,9 @@ ORDER BY sale_date;
 | 2024-03-01 | 10 | 10 | 10 | 03-01 |
 | 2024-03-02 | 20 | 30 | 30 | 03-01, 03-02 |
 | 2024-03-05 | 30 | 60 | 60 | 03-01, 03-02, 03-05 |
-| 2024-03-09 | 40 | <span class="drop">100</span> | 70 | 03-05, 03-09 |
-| 2024-03-10 | 50 | <span class="drop">150</span> | 120 | 03-05, 03-09, 03-10 |
-| 2024-03-20 | 5 | <span class="drop">155</span> | 5 | 03-20 |
+| 2024-03-09 | 40 | <span class="bad">100</span> | 70 | 03-05, 03-09 |
+| 2024-03-10 | 50 | <span class="bad">150</span> | 120 | 03-05, 03-09, 03-10 |
+| 2024-03-20 | 5 | <span class="bad">155</span> | 5 | 03-20 |
 
 > [!TIP]
 > **Ghi nhớ:** "N dòng" thì dùng `ROWS`. "N ngày" (hay N tháng) khi dữ liệu có thể thiếu ngày thì dùng `RANGE BETWEEN INTERVAL '...' PRECEDING AND CURRENT ROW`.
@@ -377,8 +377,8 @@ So giá hôm nay với giá hôm trước: `price <> LAG(price) OVER (PARTITION 
 
 | product | snap_date | old_price | new_price | `<>` |
 | --- | --- | --- | --- | --- |
-| Latte | 01-03 | 45 | NULL | <span class="drop">NULL</span> |
-| Latte | 01-04 | NULL | 48 | <span class="drop">NULL</span> |
+| Latte | 01-03 | 45 | NULL | <span class="bad">NULL</span> |
+| Latte | 01-04 | NULL | 48 | <span class="bad">NULL</span> |
 | Mocha | 01-02 | 50 | 52 | true |
 | ... | | | | |
 

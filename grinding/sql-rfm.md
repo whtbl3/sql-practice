@@ -444,7 +444,7 @@ Kết quả của CTE `rfm`:
 
 | customer_id | name | recency_days | frequency | monetary |
 | --- | --- | --- | --- | --- |
-| 1 | Alice | 13 | <span class="drop">4</span> | <span class="drop">1550</span> |
+| 1 | Alice | 13 | <span class="bad">4</span> | <span class="bad">1550</span> |
 | 2 | Ben | 42 | 2 | 650 |
 | 3 | Chloe | 127 | 3 | 1050 |
 | 4 | David | NULL | 0 | 0 |
@@ -455,7 +455,7 @@ Kết quả cuối:
 
 | segment | customers | revenue | revenue_pct |
 | --- | --- | --- | --- |
-| Champions | 1 | <span class="drop">1550</span> | <span class="drop">46.0</span> |
+| Champions | 1 | <span class="bad">1550</span> | <span class="bad">46.0</span> |
 | Loyal | 1 | 650 | 19.3 |
 | New | 0 | 0 | 0.0 |
 | At Risk | 1 | 1050 | 31.2 |
@@ -601,8 +601,8 @@ ORDER BY frequency, customer_id;
 | 5 | Emma | 0 | 1 |
 | 6 | Frank | 1 | 2 |
 | 2 | Ben | 2 | 2 |
-| 1 | Alice | 3 | <span class="drop">3</span> |
-| 3 | Chloe | 3 | <span class="drop">4</span> |
+| 1 | Alice | 3 | <span class="bad">3</span> |
+| 3 | Chloe | 3 | <span class="bad">4</span> |
 
 Nhìn hai dòng cuối: Alice và Chloe cùng 3 đơn, nhưng Alice được 3 điểm còn Chloe được 4. `NTILE` chỉ quan tâm mỗi phần có bao nhiêu dòng, không quan tâm hai dòng có bằng nhau hay không. Phần thứ 3 cần đúng một người, nên ranh giới rơi vào giữa Alice và Chloe.
 
@@ -728,10 +728,10 @@ Kết quả của CTE `labeled`:
 | --- | --- | --- | --- | --- | --- |
 | Alice | 13 | 3 | 3 | 3 | Champions |
 | Ben | 42 | 2 | 2 | 2 | Loyal |
-| Chloe | 127 | <span class="drop">NULL</span> | 3 | 3 | <span class="drop">Lost</span> |
+| Chloe | 127 | <span class="bad">NULL</span> | 3 | 3 | <span class="bad">Lost</span> |
 | David | NULL | NULL | 1 | 1 | Lost |
 | Emma | NULL | NULL | 1 | 1 | Lost |
-| Frank | 274 | <span class="drop">NULL</span> | 1 | 1 | Lost |
+| Frank | 274 | <span class="bad">NULL</span> | 1 | 1 | Lost |
 
 Kết quả cuối:
 
@@ -740,8 +740,8 @@ Kết quả cuối:
 | Champions | 1 | 1100 | 35.3 |
 | Loyal | 1 | 650 | 20.8 |
 | New | 0 | 0 | 0.0 |
-| At Risk | <span class="drop">0</span> | <span class="drop">0</span> | <span class="drop">0.0</span> |
-| Lost | <span class="drop">4</span> | <span class="drop">1370</span> | <span class="drop">43.9</span> |
+| At Risk | <span class="bad">0</span> | <span class="bad">0</span> | <span class="bad">0.0</span> |
+| Lost | <span class="bad">4</span> | <span class="bad">1370</span> | <span class="bad">43.9</span> |
 
 Chloe (127 ngày) và Frank (274 ngày) không khớp dòng ngưỡng nào, nên `r_score` là `NULL`. Dòng cuối của bảng ngưỡng là 91–`NULL`, và `127 BETWEEN 91 AND NULL` có nghĩa là `127 >= 91 AND 127 <= NULL`. Vế sau so sánh với `NULL` nên không ra `true`, kéo theo cả điều kiện không đúng. Hậu quả lan tới tận kết quả cuối: Chloe có `r_score` là `NULL`, nên không khớp luật `At Risk` (`r_score = 1`), và rơi xuống `Lost`. Nhóm `At Risk` thành trống.
 
@@ -899,10 +899,10 @@ Kết quả cuối:
 | segment | customers | revenue | revenue_pct |
 | --- | --- | --- | --- |
 | Champions | 1 | 1100 | 26.8 |
-| Loyal | <span class="drop">2</span> | <span class="drop">1750</span> | <span class="drop">42.7</span> |
+| Loyal | <span class="bad">2</span> | <span class="bad">1750</span> | <span class="bad">42.7</span> |
 | New | 0 | 0 | 0.0 |
 | At Risk | 1 | 1250 | 30.5 |
-| Lost | <span class="drop">0</span> | <span class="drop">0</span> | <span class="drop">0.0</span> |
+| Lost | <span class="bad">0</span> | <span class="bad">0</span> | <span class="bad">0.0</span> |
 
 Có hai chỗ sai:
 - Alice xuất hiện hai lần, vì mã `333` khớp cả `^33` lẫn `^[23][23]`. Alice được tính ở cả `Champions` lẫn `Loyal`, nên doanh thu 1100 của Alice bị cộng hai lần.
@@ -1210,7 +1210,7 @@ ORDER BY revenue DESC;
 
 | customer_id | name | revenue | higher_revenue | total_revenue | is_top |
 | --- | --- | --- | --- | --- | --- |
-| 3 | Chloe | 1250 | <span class="drop">NULL</span> | 3120 | <span class="drop">NULL</span> |
+| 3 | Chloe | 1250 | <span class="bad">NULL</span> | 3120 | <span class="bad">NULL</span> |
 | 1 | Alice | 1100 | 1250 | 3120 | true |
 | 2 | Ben | 650 | 2350 | 3120 | true |
 | 6 | Frank | 120 | 3000 | 3120 | false |

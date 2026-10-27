@@ -9,6 +9,8 @@
 # q <group> <n> py [mode] same problem solved with pandas (creates the .py file on first use); mode as above
 # q quiz                 open the multiple-choice SQL interview quiz in the browser (Streamlit)
 # q quiz stop            stop every running quiz server
+# q review               today's review set (spaced repetition over the problems you solved); see review.py
+# q review <k> [c|h|hv|s] work on file k of today's set; q review check | stats | set <n>
 # q verify               run every reference solution (SQL and pandas) against every test (health check)
 cd "$(dirname "$(readlink -f "$0")")" || exit 1
 
@@ -44,6 +46,27 @@ if [ "$1" = quiz ]; then
     pkill -f "[s]treamlit run quiz/app.py" && echo "Quiz stopped." || echo "No quiz server running."; exit 0
   fi
   exec uv run --no-project --python 3.12 --with streamlit --with pyyaml streamlit run quiz/app.py "${@:2}"
+fi
+
+if [ "$1" = review ]; then
+  case "$2" in
+    ''|check|stats|set) exec python3 review.py "${@:2}" ;;
+    *[!0-9]*) python3 review.py help; exit 1 ;;
+  esac
+  mode="${3:-w}"
+  if [ "$mode" = s ]; then
+    f=$(python3 review.py solution "$2") || exit 1
+    echo "--- Reference solution ---"; sed -n '/^-- QUERY/,$p' "$f" | sed '1d'
+    echo "--- Result ---"; exec uv run check.py "$f" --submit
+  fi
+  f=$(python3 review.py path "$2") || exit 1
+  case "$mode" in
+    w)  exec uv run check.py "$f" -w -r ;;
+    c)  exec uv run check.py "$f" ;;
+    h)  exec uv run check.py "$f" --submit ;;
+    hv) exec uv run check.py "$f" --submit -v ;;
+    *)  echo "Invalid mode: $mode (w, c, h, hv, s)"; exit 1 ;;
+  esac
 fi
 
 if [ "$1" = verify ]; then

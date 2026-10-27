@@ -115,10 +115,10 @@ $$;
 | # | OLD.price → NEW.price | no condition | `<>` | `IS DISTINCT FROM` |
 | --- | --- | --- | --- | --- |
 | 1 | 8.00 → 9.50 | logged | logged | logged |
-| 2 | 25.00 → 25.00 | <span class="drop">logged</span> | | |
-| 3 | NULL → 120.00 | logged | <span class="drop">missed</span> | logged |
-| 4 | 40.00 → NULL | logged | <span class="drop">missed</span> | logged |
-| 5 | 9.50 → 9.50 (name only) | <span class="drop">logged</span> | | |
+| 2 | 25.00 → 25.00 | <span class="bad">logged</span> | | |
+| 3 | NULL → 120.00 | logged | <span class="bad">missed</span> | logged |
+| 4 | 40.00 → NULL | logged | <span class="bad">missed</span> | logged |
+| 5 | 9.50 → 9.50 (name only) | <span class="bad">logged</span> | | |
 
 - Không có điều kiện: ghi 5 dòng, kể cả câu 2 (đặt lại đúng giá cũ) và câu 5 (chỉ đổi tên). Với `FOR EACH ROW`, trigger chạy cho mọi dòng bị `UPDATE`, bất kể cột nào đổi.
 - `NEW.price <> OLD.price`: mất câu 3 và câu 4, vì so sánh với `NULL` không ra `true`. Chỉ còn 1 dòng.

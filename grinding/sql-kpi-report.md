@@ -435,7 +435,7 @@ LIMIT 1;
 | 2 | earn | 70 | 0 | 110 | 110 |
 | 3 | redeem | 0 | 1 | 0 | 110 |
 | 4 | earn | 30 | 1 | 30 | 140 |
-| 5 | earn | 90 | 1 | 120 | <span class="drop">230</span> |
+| 5 | earn | 90 | 1 | 120 | <span class="bad">230</span> |
 | 6 | earn | 100 | 1 | **220** | 330 |
 
 Kết quả: giao dịch 6, số điểm 220. Bộ lọc `balance >= 200` phải đặt ở tầng ngoài (`running` là một CTE riêng), vì hàm cửa sổ không dùng được trong `WHERE` của cùng tầng `SELECT`.

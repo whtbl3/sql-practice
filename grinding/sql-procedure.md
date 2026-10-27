@@ -53,8 +53,8 @@ Thử một bản không kiểm tra gì, với hai lần gọi: Ben chuyển 120
 
 | account_id | owner | balance after |
 | --- | --- | --- |
-| 1 | Alice | <span class="drop">150.00</span> |
-| 2 | Ben | <span class="drop">−40.00</span> |
+| 1 | Alice | <span class="bad">150.00</span> |
+| 2 | Ben | <span class="bad">−40.00</span> |
 | 3 | Chloe | 120.00 |
 
 Có hai chỗ sai:

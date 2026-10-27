@@ -235,12 +235,12 @@ ORDER BY pos;
 | 2 | 0 | 2 | 3 | 2 | 2 |
 | 3 | 1 | 2 | 3 | 1 | 1 |
 | 4 | 3 | 3 | 3 | 0 | 0 |
-| 5 | 0 | 3 | 2 | 2 | <span class="drop">3</span> |
-| 6 | 0 | 3 | 2 | 2 | <span class="drop">3</span> |
-| 7 | 2 | 3 | 2 | 0 | <span class="drop">1</span> |
-| 8 | 1 | 3 | 1 | 0 | <span class="drop">2</span> |
-| 9 | 0 | 3 | 1 | 1 | <span class="drop">3</span> |
-| 10 | 1 | 3 | 1 | 0 | <span class="drop">2</span> |
+| 5 | 0 | 3 | 2 | 2 | <span class="bad">3</span> |
+| 6 | 0 | 3 | 2 | 2 | <span class="bad">3</span> |
+| 7 | 2 | 3 | 2 | 0 | <span class="bad">1</span> |
+| 8 | 1 | 3 | 1 | 0 | <span class="bad">2</span> |
+| 9 | 0 | 3 | 1 | 1 | <span class="bad">3</span> |
+| 10 | 1 | 3 | 1 | 0 | <span class="bad">2</span> |
 
 `ROWS BETWEEN CURRENT ROW AND UNBOUNDED FOLLOWING` là khung từ dòng hiện tại tới **cuối** bảng, tức nhìn sang bên phải.
 

@@ -25,6 +25,24 @@ q topn 3 py                  # cùng đề, giải bằng pandas (lần đầu t
 q topn 3 py c | h | hv | s   # như bản SQL; test ẩn dùng chung với bản SQL
 ```
 
+## Ôn tập mỗi ngày (spaced repetition)
+
+```bash
+q review           # tạo bộ đề ôn hôm nay trong review/ (chạy lại trong ngày thì chỉ hiện danh sách)
+q review 1         # làm file 1 của bộ hôm nay, in output mỗi khi lưu
+q review 1 h       # submit file 1 (test hiện + test ẩn); c | hv | s như bài thường
+q review check     # submit cả bộ hôm nay (chỉ báo kết quả, không đổi lịch)
+q review stats     # xem mọi bài: hộp, ngày ôn tiếp theo, kết quả lần gần nhất
+q review set 5     # đổi số bài mỗi ngày (mặc định 3)
+```
+
+- Chỉ ôn những bài bạn **đã tự làm** (có query của bạn dưới `-- QUERY` trong `problems/`). Bài làm thêm sẽ tự được đưa vào.
+- Mỗi ngày chạy `q review` một lần: bộ hôm trước được chấm bằng test ẩn, rồi bị xóa và thay bằng bộ mới.
+  - **Pass**: bài lên hộp cao hơn, lần ôn sau xa dần: 1 → 2 → 4 → 7 → 15 → 30 → 60 ngày.
+  - **Fail**: bài về hộp đầu, ngày mai ôn lại.
+  - **Bỏ trống**: bài mở đầu bộ đề ngày hôm sau.
+- File ôn nằm trong `review/` với tên gốc (để test ẩn vẫn chạy), đề giữ nguyên, phần `-- QUERY` để trống. Thư mục `review/` không được git theo dõi.
+
 ## Khác
 
 ```bash
