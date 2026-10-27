@@ -35,3 +35,29 @@ customer_rfm
 
 -- QUERY
 -- write your query here
+WITH labeled AS (
+  SELECT
+    customer_id,
+    monetary,
+    CASE
+        WHEN r_score = 3 AND f_score = 3 THEN 'Champions'
+        WHEN r_score >= 2 AND f_score >= 2 THEN 'Loyal'
+        WHEN r_score = 3 AND f_score = 1 THEN 'New'
+        WHEN r_score = 1 AND f_score >= 2 THEN 'At Risk'
+        ELSE 'Lost'
+    END AS segment
+  FROM customer_rfm
+),
+segments(segment, sort_key) AS (
+  VALUES ('Champions', 1), ('Loyal', 2), ('New', 3), ('At Risk', 4), ('Lost', 5)
+)
+SELECT
+  s.segment,
+  COUNT(l.customer_id) AS customers,
+  COALESCE(SUM(l.monetary), 0) AS revenue,
+  ROUND(100.0 * COALESCE(SUM(l.monetary), 0)
+             / NULLIF(SUM(SUM(l.monetary)) OVER (), 0), 1) AS revenue_pct
+FROM segments s
+  LEFT JOIN labeled l ON l.segment = s.segment
+GROUP BY s.segment, s.sort_key
+ORDER BY s.sort_key

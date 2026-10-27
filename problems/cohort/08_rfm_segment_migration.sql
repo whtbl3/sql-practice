@@ -52,3 +52,47 @@ orders
 
 -- QUERY
 -- write your query here
+WITH snapshots(snap, snap_date) AS (
+  VALUES ('q1', DATE '2024-04-01'), ('q2', DATE '2024-07-01')
+),
+rfm AS (
+  SELECT 
+    c.customer_id, s.snap,
+    COALESCE(s.snap_date - MAX(o.order_date), 0) AS recency_days,
+    COUNT(o.order_id) AS frequency
+  FROM customers c 
+    CROSS JOIN snapshots s
+    LEFT JOIN orders o 
+      ON o.customer_id = c.customer_id
+      AND o.status = 'Completed'
+      AND o.order_date < s.snap_date -- Điều kiện lọc ngày đã nằm ở đây
+  GROUP BY c.customer_id, s.snap, s.snap_date
+),
+labled AS (
+  SELECT
+    customer_id,
+    snap,
+    recency_days,
+    frequency,
+    CASE WHEN frequency = 0 THEN 'Not Started'
+         WHEN recency_days <= 30 AND frequency >= 3 THEN 'Champion'
+         WHEN recency_days <= 30 THEN 'Active'
+         WHEN frequency >= 3 THEN 'At Risk'
+    ELSE 'Lapsed' END AS segments
+  FROM rfm
+),
+pivot AS (
+  SELECT
+    customer_id,
+    MAX(CASE WHEN snap = 'q1' THEN segments END) AS segment_q1,
+    MAX(CASE WHEN snap = 'q2' THEN segments END) AS segment_q2
+  FROM labled
+  GROUP BY customer_id
+  ORDER BY  customer_id
+)
+SELECT
+  customer_id,
+  segment_q1,
+  segment_q2
+FROM pivot
+WHERE segment_q1 != segment_q2
