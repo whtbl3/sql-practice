@@ -139,9 +139,10 @@ def build(st):
     for old in glob.glob(os.path.join(REVIEW, "*.sql")):
         os.remove(old)
     files = []
-    for src in picked:
+    for k, src in enumerate(picked, 1):
         dst = os.path.join("review", os.path.basename(src))
         with open(os.path.join(HERE, dst), "w", encoding="utf-8") as f:
+            f.write(f"-- Review #{k} ({TODAY}): q review {k} [c|h|hv|s]\n")
             f.write(blank_copy(open(os.path.join(HERE, src), encoding="utf-8").read()))
         files.append({"src": src, "file": dst})
     st["session"] = {"date": str(TODAY), "files": files}
