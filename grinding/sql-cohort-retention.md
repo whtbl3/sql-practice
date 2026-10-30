@@ -298,7 +298,7 @@ Ben đăng ký tháng 1/2024, nhưng đã mua đơn 2 vào 2023-12-10, trước 
 
 | customer | cohort_month | order_month | month_offset |
 | --- | --- | --- | --- |
-| Ben | 2024-01 | 2023-12 | **−1** |
+| Ben | 2024-01 | 2023-12 | <span class="drop">−1</span> |
 
 Retention không có nghĩa ở tháng trước cohort, nên ta bỏ những dòng này đi bằng điều kiện `order_month >= cohort_month`.
 
@@ -310,9 +310,9 @@ Thử giữ nguyên `FIRST_VALUE` và chạy:
 
 | cohort_month | month_offset | active_customers | retention_pct |
 | --- | --- | --- | --- |
-| 2024-01 | 0 | 2 | **100.0** |
-| 2024-01 | 1 | 1 | **50.0** |
-| 2024-01 | 2 | 2 | **100.0** |
+| 2024-01 | 0 | 2 | <span class="bad">100.0</span> |
+| 2024-01 | 1 | 1 | <span class="bad">50.0</span> |
+| 2024-01 | 2 | 2 | <span class="bad">100.0</span> |
 
 Kết quả nói cohort 2024-01 giữ được 100% khách ở tháng thứ 2, trong khi thực ra chỉ 2 trên 4 người mua. Mẫu số đã bị lấy là 2 (số người mua ở tháng 1) thay vì 4 (số người đăng ký).
 
@@ -325,9 +325,13 @@ Số khách của cohort phải đếm từ chính bảng định nghĩa cohort,
 | 2023-12 | 2 (Alice, Chloe) |
 | 2024-01 | 4 (Ben, David, Emma, Frank) |
 
-Ghép cả hai cách sửa lại, các CTE từ B2 trở đi viết lại như sau. `customer_months` ở B1 giữ nguyên.
+Ghép cả hai cách sửa lại, ta có query đầy đủ dưới đây. `customer_months` ở B1 giữ nguyên, các CTE sau đó được viết lại.
 
 ```sql
+WITH customer_months AS (                                            -- như Phần 1
+  SELECT DISTINCT customer_id, DATE_TRUNC('month', order_date)::date AS order_month
+  FROM orders
+),
 cohorts AS (                                                         -- mới: cohort từ ngày đăng ký
   SELECT customer_id, DATE_TRUNC('month', signup_date)::date AS cohort_month
   FROM customers
@@ -387,11 +391,13 @@ FROM orders
 GROUP BY customer_id
 ```
 
-| customer | first_date | `MAX(order_date)` | days | should be |
+Hai cột cuối không do query trả về, mà được thêm vào để đối chiếu: `days` = `second_date` − `first_date`, `should be` là số ngày đúng.
+
+| customer | first_date | second_date | days | should be |
 | --- | --- | --- | --- | --- |
-| Alice | 2023-12-03 | 2024-03-02 | 90 | 17 (2nd order on 12-20) |
-| Chloe | 2023-12-28 | 2023-12-28 | **0** | no 2nd order |
-| David | 2024-01-09 | 2024-02-14 | 36 | 21 (2nd order on 01-30) |
+| Alice | 2023-12-03 | 2024-03-02 | <span class="bad">90</span> | 17 (2nd order on 12-20) |
+| Chloe | 2023-12-28 | 2023-12-28 | <span class="bad">0</span> | no 2nd order |
+| David | 2024-01-09 | 2024-02-14 | <span class="bad">36</span> | 21 (2nd order on 01-30) |
 | ... | | | | |
 
 Có hai lỗi. `MAX` cho ra đơn **cuối cùng**, không phải đơn thứ hai, nên Alice và David, vốn mua lại rất nhanh, lại bị tính là quá 30 ngày. Còn Chloe chỉ có một đơn, nên `MAX` và `MIN` là cùng một ngày, cách nhau 0 ngày. Chloe bị tính là "mua lại trong 30 ngày" dù chưa hề mua lại.
