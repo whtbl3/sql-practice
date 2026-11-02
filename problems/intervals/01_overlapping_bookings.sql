@@ -32,3 +32,17 @@ bookings
 
 -- QUERY
 -- write your query here
+SELECT
+  a.room,
+  a.booking_id AS booking_a,
+  b.booking_id AS booking_b,
+  GREATEST(a.check_in, b.check_in) AS overlap_start,
+  LEAST(a.check_out, b.check_out) AS overlap_end,
+  LEAST(a.check_out, b.check_out) - GREATEST(a.check_in, b.check_in) AS overlap_nights
+FROM bookings a
+JOIN bookings b
+ON a.room = b.room
+AND a.booking_id < b.booking_id
+AND a.check_in < b.check_out
+AND b.check_in < a.check_out
+ORDER BY a.room, booking_a, booking_b
