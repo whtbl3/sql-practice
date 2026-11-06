@@ -1,0 +1,244 @@
+{
+  "per_day": 3,
+  "cards": {
+    "problems/agg/01_monthly_income_expense.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/agg/02_frequently_late_suppliers.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/agg/03_books_per_genre.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/agg/04_goals_and_cards_per_team.sql": {
+      "box": 1,
+      "due": "2026-11-07",
+      "reviews": 1,
+      "last": "2026-11-05 pass"
+    },
+    "problems/agg/05_above_category_average.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/agg/06_customer_spend_tiers.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/agg/07_open_issues_summary.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/agg/08_averages_with_nulls.sql": {
+      "box": 1,
+      "due": "2026-11-01",
+      "reviews": 1,
+      "last": "2026-10-30 pass"
+    },
+    "problems/antijoin/01_not_exists.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/antijoin/02_relational_division.sql": {
+      "box": 1,
+      "due": "2026-11-01",
+      "reviews": 1,
+      "last": "2026-10-30 pass"
+    },
+    "problems/antijoin/03_lapsed_customers.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/cohort/01_monthly_retention.sql": {
+      "box": 1,
+      "due": "2026-10-31",
+      "reviews": 1,
+      "last": "2026-10-29 pass"
+    },
+    "problems/cohort/02_rfm_scoring.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/cohort/03_signup_cohort_retention.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/cohort/04_repeat_purchase_rate.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/cohort/05_rfm_segments.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/cohort/06_rfm_fixed_thresholds.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/cohort/07_rfm_segment_summary.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/cohort/08_rfm_segment_migration.sql": {
+      "box": 1,
+      "due": "2026-11-07",
+      "reviews": 1,
+      "last": "2026-11-05 pass"
+    },
+    "problems/islands/01_month_streak.sql": {
+      "box": 1,
+      "due": "2026-10-31",
+      "reviews": 1,
+      "last": "2026-10-29 pass"
+    },
+    "problems/islands/02_daily_login_streak.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/islands/03_find_gaps.sql": {
+      "box": 0,
+      "due": "2026-11-01",
+      "reviews": 1,
+      "lapses": 1,
+      "last": "2026-10-31 fail"
+    },
+    "problems/islands/04_current_streak.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/islands/05_island_ranges.sql": {
+      "box": 1,
+      "due": "2026-11-01",
+      "reviews": 1,
+      "last": "2026-10-30 pass"
+    },
+    "problems/misc/01_running_total_moving_avg.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/selfjoin/01_manager_salary.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/subquery/01_above_company_average.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/subquery/02_units_per_product.sql": {
+      "box": 0,
+      "due": "2026-11-07",
+      "reviews": 1,
+      "lapses": 1,
+      "last": "2026-11-06 fail"
+    },
+    "problems/subquery/03_electronics_buyers.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/subquery/04_average_orders_per_customer.sql": {
+      "box": 1,
+      "due": "2026-11-02",
+      "reviews": 1,
+      "last": "2026-10-31 pass"
+    },
+    "problems/subquery/05_pricier_than_all_budget.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/subquery/06_third_highest_no_window.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/subquery/07_second_highest_or_null.sql": {
+      "box": 0,
+      "due": "2026-10-30",
+      "reviews": 1,
+      "lapses": 1,
+      "last": "2026-10-29 fail"
+    },
+    "problems/subquery/08_top2_orders_lateral.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/subquery/09_above_average_category.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/subquery/10_running_total_no_window.sql": {
+      "box": 1,
+      "due": "2026-11-02",
+      "reviews": 1,
+      "last": "2026-10-31 pass"
+    },
+    "problems/subquery/11_jan_and_feb_not_march.sql": {
+      "box": 1,
+      "due": "2026-11-08",
+      "reviews": 1,
+      "last": "2026-11-06 pass"
+    },
+    "problems/subquery/12_unusually_large_orders.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/topn/01_nth_highest_per_group.sql": {
+      "box": 0,
+      "due": "2026-10-28",
+      "reviews": 0
+    },
+    "problems/topn/02_latest_email.sql": {
+      "box": 1,
+      "due": "2026-11-07",
+      "reviews": 1,
+      "last": "2026-11-05 pass"
+    },
+    "problems/intervals/01_overlapping_bookings.sql": {
+      "box": 0,
+      "due": "2026-11-02",
+      "reviews": 0
+    }
+  },
+  "session": {
+    "date": "2026-11-06",
+    "files": [
+      {
+        "src": "problems/cohort/07_rfm_segment_summary.sql",
+        "file": "review/07_rfm_segment_summary.sql"
+      },
+      {
+        "src": "problems/agg/05_above_category_average.sql",
+        "file": "review/05_above_category_average.sql"
+      },
+      {
+        "src": "problems/antijoin/01_not_exists.sql",
+        "file": "review/01_not_exists.sql"
+      }
+    ]
+  }
+}
