@@ -38,3 +38,18 @@ sales
 
 -- QUERY
 -- write your query here
+WITH months(month_start) AS (
+  VALUES
+    (DATE '2024-01-01'),
+    (DATE '2024-02-01'),
+    (DATE '2024-03-01')
+)
+SELECT str.store_id, str.store_name, TO_CHAR(m.month_start, 'YYYY-MM') AS month
+FROM stores str CROSS JOIN months m
+WHERE NOT EXISTS (
+  SELECT 1
+  FROM sales s
+  WHERE s.sale_date >= m.month_start AND s.sale_date < m.month_start + INTERVAL '1 month'
+  AND s.store_id = str.store_id
+)
+ORDER BY str.store_id, month

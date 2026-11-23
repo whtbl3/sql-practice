@@ -1,4 +1,4 @@
--- Review #1 (2026-11-06): q review 1 [c|h|hv|s]
+-- Review #1 (2026-11-24): q review 1 [c|h|hv|s]
 -- Problem cohort/07: Revenue share by RFM segment  [Hard]
 -- Pattern: RFM: CASE labels + fixed segment list LEFT JOIN + SUM(SUM()) OVER
 -- Variant: one row per segment instead of one row per customer, empty segments still listed

@@ -23,9 +23,10 @@
       "last": "2026-11-05 pass"
     },
     "problems/agg/05_above_category_average.sql": {
-      "box": 0,
-      "due": "2026-10-28",
-      "reviews": 0
+      "box": 1,
+      "due": "2026-11-25",
+      "reviews": 1,
+      "last": "2026-11-23 pass"
     },
     "problems/agg/06_customer_spend_tiers.sql": {
       "box": 0,
@@ -45,8 +46,10 @@
     },
     "problems/antijoin/01_not_exists.sql": {
       "box": 0,
-      "due": "2026-10-28",
-      "reviews": 0
+      "due": "2026-11-24",
+      "reviews": 1,
+      "lapses": 1,
+      "last": "2026-11-23 fail"
     },
     "problems/antijoin/02_relational_division.sql": {
       "box": 1,
@@ -71,9 +74,10 @@
       "reviews": 0
     },
     "problems/cohort/03_signup_cohort_retention.sql": {
-      "box": 0,
-      "due": "2026-10-28",
-      "reviews": 0
+      "box": 1,
+      "due": "2026-11-26",
+      "reviews": 1,
+      "last": "2026-11-24 pass"
     },
     "problems/cohort/04_repeat_purchase_rate.sql": {
       "box": 0,
@@ -222,22 +226,27 @@
       "box": 0,
       "due": "2026-11-02",
       "reviews": 0
+    },
+    "problems/antijoin/04_store_months_without_sales.sql": {
+      "box": 0,
+      "due": "2026-11-24",
+      "reviews": 0
     }
   },
   "session": {
-    "date": "2026-11-06",
+    "date": "2026-11-24",
     "files": [
       {
         "src": "problems/cohort/07_rfm_segment_summary.sql",
         "file": "review/07_rfm_segment_summary.sql"
       },
       {
-        "src": "problems/agg/05_above_category_average.sql",
-        "file": "review/05_above_category_average.sql"
+        "src": "problems/cohort/05_rfm_segments.sql",
+        "file": "review/05_rfm_segments.sql"
       },
       {
-        "src": "problems/antijoin/01_not_exists.sql",
-        "file": "review/01_not_exists.sql"
+        "src": "problems/subquery/01_above_company_average.sql",
+        "file": "review/01_above_company_average.sql"
       }
     ]
   }

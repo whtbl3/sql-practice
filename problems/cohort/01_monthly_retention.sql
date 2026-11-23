@@ -67,4 +67,4 @@ SELECT
     1
   ) AS retention_pct
 FROM activity
-ORDER BY cohort_month, month_offset;
+ORDER BY cohort_month, month_offset;  
