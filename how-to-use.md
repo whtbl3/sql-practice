@@ -8,6 +8,33 @@ q topn             # liệt kê một nhóm (gõ tắt được: q to, q is, q d
 q func             # bài Function / Procedure / Trigger (tài liệu: grinding/sql-function.md, sql-procedure.md, sql-trigger.md)
 ```
 
+Cột thứ hai trong `q` là **hạng ưu tiên** (S / A / B / C, định nghĩa trong `priority.txt`).
+
+## Học theo thứ tự ưu tiên
+
+```bash
+q plan             # lộ trình đầy đủ: ✓ = đã làm, "<- làm tiếp" = bài nên làm bây giờ
+q plan S           # chỉ một hạng (S, A, B hoặc C)
+q plan todo        # chỉ các bài chưa làm
+```
+
+| Hạng | Ý nghĩa | Gồm |
+|---|---|---|
+| **S** | Gần như phỏng vấn DA nào cũng hỏi, phải tự viết được trong 5 phút | ranking / top-N, Nth highest, LAG (MoM, YoY), running total, % of total, self join, pivot, dedup |
+| **A** | Hay gặp ở vòng 2 | subquery, window nâng cao, gaps & islands, anti-join, median, cohort / funnel / churn cơ bản, recursive cơ bản, DML |
+| **B** | Analytics chuyên sâu | RFM, churn / LTV, intervals, ROLLUP, Pareto, as-of join |
+| **C** | Nâng cao / data engineer | graph, DP, FIFO, function / procedure / trigger |
+
+Cách làm mỗi ngày:
+
+1. `q plan`, rồi mở bài có dấu `<- làm tiếp` (ví dụ `q window 1`).
+2. Đọc đề, tự viết query và lưu file để xem output. Bí quá thì đọc grinding doc ghi ở dòng `-- Learn:` của đề.
+3. `q window 1 h` để submit, sửa cho đến khi pass hết test ẩn rồi mới sang bài tiếp theo. (Dấu ✓ chỉ có nghĩa là dưới `-- QUERY` đã có query của bạn, không có nghĩa là đã pass.)
+4. Xong hạng S mới sang A. Trong mỗi hạng cứ làm từ trên xuống, vì bài trước là nền cho bài sau.
+5. Mỗi ngày chạy thêm `q review` để ôn lại các bài đã làm.
+
+Muốn đổi hạng hay thứ tự một bài thì sửa dòng của bài đó trong `priority.txt`. Bài mới chưa có trong file sẽ được `q plan` báo là "Chưa xếp hạng".
+
 ## Làm bài SQL
 
 ```bash

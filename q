@@ -11,6 +11,7 @@
 # q quiz stop            stop every running quiz server
 # q review               today's review set (spaced repetition over the problems you solved); see review.py
 # q review <k> [c|h|hv|s] work on file k of today's set; q review check | stats | set <n>
+# q plan [S|A|B|C|todo]  study plan by priority (priority.txt): ✓ solved, next problem to do; see plan.py
 # q verify               run every reference solution (SQL and pandas) against every test (health check)
 cd "$(dirname "$(readlink -f "$0")")" || exit 1
 
@@ -18,6 +19,10 @@ list() {  # $1 = group name or empty
 python3 - "$1" <<'PY'
 import glob, os, re, sys
 want = sys.argv[1]
+prio = {}
+for line in open("priority.txt", encoding="utf-8"):
+    line = line.split("#", 1)[0].split()
+    if len(line) == 2: prio[line[1]] = line[0]
 for g in sorted(os.listdir("problems")):
     if want and g != want: continue
     files = sorted(glob.glob(f"problems/{g}/*.sql"))
@@ -28,7 +33,7 @@ for g in sorted(os.listdir("problems")):
         pat = re.search(r"^-- Pattern: (.*)$", head, re.M)
         n = os.path.basename(f).split("_")[0]
         py = " [py]" if os.path.exists(f"solutions/{g}/" + os.path.basename(f)[:-4] + ".py") else ""
-        print(f"  {n}  {m.group(2):<7} {m.group(1):<48} {pat.group(1) if pat else ''}{py}")
+        print(f"  {n}  {prio.get(g + '/' + n, '-')}  {m.group(2):<7} {m.group(1):<48} {pat.group(1) if pat else ''}{py}")
 PY
 }
 
@@ -68,6 +73,8 @@ if [ "$1" = review ]; then
     *)  echo "Invalid mode: $mode (w, c, h, hv, s)"; exit 1 ;;
   esac
 fi
+
+[ "$1" = plan ] && exec python3 plan.py "${@:2}"
 
 if [ "$1" = verify ]; then
   fail=0

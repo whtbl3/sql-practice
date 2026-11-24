@@ -1,0 +1,159 @@
+# Thứ tự ưu tiên luyện đề, dùng cho `q plan` và cột hạng trong `q`.
+# Mỗi dòng: <hạng> <nhóm>/<số>. Trong cùng một hạng, làm từ trên xuống (bài trước là nền cho bài sau).
+#   S  gần như phỏng vấn Data Analyst nào cũng hỏi: phải tự viết được trong 5 phút
+#   A  hay gặp ở vòng 2 / công ty làm dữ liệu nhiều
+#   B  analytics chuyên sâu (product, growth, analytics engineer)
+#   C  nâng cao / data engineer: làm sau cùng
+
+# --- S: ranking, top-N, Nth highest
+S window/01
+S topn/03
+S topn/01
+S topn/02
+S topn/05
+S subquery/07
+# --- S: LAG, running total, % of total
+S misc/03
+S misc/06
+S misc/01
+S window/03
+S window/04
+S misc/02
+# --- S: aggregate, join, pivot, dedup cơ bản
+S agg/01
+S agg/05
+S agg/08
+S subquery/01
+S selfjoin/01
+S antijoin/01
+S pivot/01
+S pivot/02
+S dml/02
+
+# --- A: subquery / aggregate
+A agg/02
+A agg/03
+A agg/04
+A agg/06
+A subquery/02
+A subquery/03
+A subquery/04
+A subquery/05
+A subquery/09
+A subquery/11
+A subquery/06
+A topn/04
+# --- A: window
+A window/02
+A window/05
+A window/07
+A window/14
+A window/08
+A window/09
+A window/12
+A window/10
+A window/13
+A selfjoin/03
+A selfjoin/02
+# --- A: gaps & islands, calendar
+A islands/02
+A islands/05
+A islands/01
+A islands/04
+A islands/03
+A misc/05
+A gaps/01
+A gaps/02
+A sessions/01
+# --- A: anti-join, pivot, median
+A antijoin/03
+A antijoin/04
+A antijoin/05
+A antijoin/02
+A pivot/03
+A median/01
+A misc/04
+# --- A: cohort, funnel, churn cơ bản
+A cohort/01
+A cohort/03
+A cohort/04
+A funnel/01
+A churn/01
+A rfm/01
+# --- A: recursive, intervals, DML
+A recursive/02
+A intervals/01
+A dml/01
+A dml/04
+A dml/05
+A dml/03
+
+# --- B
+B subquery/08
+B subquery/10
+B subquery/12
+B agg/07
+B agg/09
+B agg/10
+B dml/06
+B recursive/01
+B window/06
+B window/11
+B cohort/02
+B cohort/05
+B cohort/06
+B cohort/07
+B cohort/08
+B rfm/02
+B rfm/03
+B rfm/04
+B rfm/05
+B rfm/06
+B churn/02
+B churn/03
+B churn/04
+B churn/05
+B churn/06
+B funnel/02
+B gaps/03
+B gaps/04
+B gaps/05
+B ltv/01
+B ltv/02
+B ltv/03
+B ltv/04
+B median/02
+B median/03
+B median/04
+B intervals/02
+B intervals/03
+B intervals/04
+B misc/07
+B misc/08
+B graph/01
+B window/15
+B window/16
+
+# --- C
+C graph/02
+C graph/03
+C graph/04
+C graph/05
+C dp/01
+C dp/02
+C dp/03
+C dp/04
+C dp/05
+C fifo/01
+C fifo/02
+C fifo/03
+C func/01
+C func/02
+C func/03
+C func/04
+C func/05
+C func/09
+C func/06
+C func/10
+C func/07
+C func/08
