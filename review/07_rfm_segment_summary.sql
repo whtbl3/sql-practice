@@ -1,4 +1,4 @@
--- Review #1 (2026-11-24): q review 1 [c|h|hv|s]
+-- Review #1 (2026-11-28): q review 1 [c|h|hv|s]
 -- Problem cohort/07: Revenue share by RFM segment  [Hard]
 -- Pattern: RFM: CASE labels + fixed segment list LEFT JOIN + SUM(SUM()) OVER
 -- Variant: one row per segment instead of one row per customer, empty segments still listed
@@ -36,3 +36,37 @@ customer_rfm
 
 -- QUERY
 -- write your query here
+WITH segments AS (
+    SELECT 'Champions' AS segment, 1 AS sort_order
+    UNION ALL SELECT 'Loyal', 2
+    UNION ALL SELECT 'New', 3
+    UNION ALL SELECT 'At Risk', 4
+    UNION ALL SELECT 'Lost', 5
+),
+labeled_customers AS (
+    SELECT
+        customer_id,
+        monetary,
+        CASE
+            WHEN r_score = 3 AND f_score = 3 THEN 'Champions'
+            WHEN r_score >= 2 AND f_score >= 2 THEN 'Loyal'
+            WHEN r_score = 3 AND f_score = 1 THEN 'New'
+            WHEN r_score = 1 AND f_score >= 2 THEN 'At Risk'
+            ELSE 'Lost'
+        END AS segment
+    FROM customer_rfm
+)
+SELECT
+    s.segment,
+    COUNT(l.customer_id) AS customers,
+    COALESCE(SUM(l.monetary), 0) AS revenue,
+    ROUND(
+        COALESCE(SUM(l.monetary), 0) * 100.0
+        / NULLIF(SUM(SUM(l.monetary)) OVER (), 0),
+        1
+    ) AS revenue_pct
+FROM segments s
+LEFT JOIN labeled_customers l
+    ON s.segment = l.segment
+GROUP BY s.segment, s.sort_order
+ORDER BY s.sort_order;

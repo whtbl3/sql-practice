@@ -1,4 +1,4 @@
--- Review #2 (2026-11-24): q review 2 [c|h|hv|s]
+-- Review #2 (2026-11-28): q review 2 [c|h|hv|s]
 -- Problem cohort/05: RFM segment labels  [Hard]
 -- Pattern: RFM: NTILE scores + CASE labels (specific branch first)
 -- Variant: labeling segments on top of the scores from cohort/02
@@ -43,3 +43,47 @@ orders
 
 -- QUERY
 -- write your query here
+WITH completed_orders AS (
+  SELECT
+    customer_id,
+    order_date::date AS order_date,
+    total_amount
+  FROM orders
+  WHERE status = 'Completed'
+),
+as_of AS (
+  SELECT MAX(order_date) + 1 AS as_of_date
+  FROM completed_orders
+),
+rfm_metrics AS (
+  SELECT
+    c.customer_id,
+    a.as_of_date - MAX(c.order_date) AS recency_days,
+    COUNT(*) AS frequency,
+    SUM(c.total_amount) AS monetary
+  FROM completed_orders c
+  CROSS JOIN as_of a
+  GROUP BY c.customer_id, a.as_of_date
+),
+rfm_scores AS (
+  SELECT
+    customer_id,
+    NTILE(3) OVER (ORDER BY recency_days DESC, customer_id ASC) AS r_score,
+    NTILE(3) OVER (ORDER BY frequency ASC, customer_id ASC) AS f_score,
+    NTILE(3) OVER (ORDER BY monetary ASC, customer_id ASC) AS m_score
+  FROM rfm_metrics
+)
+SELECT
+    customer_id,
+    r_score,
+    f_score,
+    m_score,
+    CASE
+        WHEN r_score = 3 AND f_score = 3 THEN 'Champions'
+        WHEN r_score >= 2 AND f_score >= 2 THEN 'Loyal'
+        WHEN r_score = 3 AND f_score = 1 THEN 'New'
+        WHEN r_score = 1 AND f_score >= 2 THEN 'At Risk'
+        ELSE 'Lost'
+    END AS segment
+FROM rfm_scores
+ORDER BY customer_id;

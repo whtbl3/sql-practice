@@ -1,4 +1,4 @@
--- Review #3 (2026-11-24): q review 3 [c|h|hv|s]
+-- Review #3 (2026-11-28): q review 3 [c|h|hv|s]
 -- Problem subquery/01: Employees above the company average  [Easy]
 -- Pattern: Scalar subquery in WHERE
 -- Variant: non-correlated subquery
@@ -25,3 +25,10 @@ employees
 
 -- QUERY
 -- write your query here
+SELECT name, salary
+FROM employees
+WHERE salary > (
+  SELECT AVG(salary)
+  FROM employees
+)
+ORDER BY salary DESC, name ASC
